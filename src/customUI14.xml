@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Ribbon do Prumo: uma aba "tudo num lugar" (controles nativos do Office + comandos do Prumo).
+     As ferramentas de forma ficam no painel lateral (panel/) e, como reserva, no menu do botão Painel.
+     Todo botão próprio chama Prumo_Action; o id escolhe a ação em modRibbon.bas. Ícones: imageMso nativos. -->
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="Prumo_OnLoad">
+  <ribbon>
+    <tabs>
+      <tab id="PrumoTab" label="Prumo" insertBeforeMso="TabHome">
+
+        <group id="gPrumo" label="Prumo">
+          <button id="Panel" label="Painel" size="large" showLabel="false" imageMso="ObjectSizeAndPositionDialog" onAction="Prumo_Action" screentip="Painel do Prumo" supertip="Mostra a barra lateral (o X no painel esconde)."/>
+          <menu id="mFerramentas" label="Ferramentas" size="large" showLabel="false" imageMso="ObjectsAlignLeft" itemSize="normal" screentip="Ferramentas de forma" supertip="As mesmas ferramentas da barra lateral, em menu.">
+              <menu id="mAlinhar" label="Alinhar à última forma" imageMso="ObjectsAlignLeft">
+                <button id="AlignLeft" label="Esquerda" imageMso="ObjectsAlignLeft" onAction="Prumo_Action"/>
+                <button id="AlignCenter" label="Centro" imageMso="ObjectsAlignCenterHorizontal" onAction="Prumo_Action"/>
+                <button id="AlignRight" label="Direita" imageMso="ObjectsAlignRight" onAction="Prumo_Action"/>
+                <button id="AlignTop" label="Topo" imageMso="ObjectsAlignTop" onAction="Prumo_Action"/>
+                <button id="AlignMiddle" label="Meio" imageMso="ObjectsAlignMiddleVertical" onAction="Prumo_Action"/>
+                <button id="AlignBottom" label="Base" imageMso="ObjectsAlignBottom" onAction="Prumo_Action"/>
+              </menu>
+              <menu id="mTamanho" label="Tamanho" imageMso="ObjectSizeAndPositionDialog">
+                <button id="SameWidth" label="Mesma largura da última" onAction="Prumo_Action"/>
+                <button id="SameHeight" label="Mesma altura da última" onAction="Prumo_Action"/>
+                <button id="SameSize" label="Mesmo tamanho da última" onAction="Prumo_Action"/>
+                <menuSeparator id="sTam"/>
+                <button id="WidthPlus" label="Largura +1 mm" onAction="Prumo_Action"/>
+                <button id="WidthMinus" label="Largura −1 mm" onAction="Prumo_Action"/>
+                <button id="HeightPlus" label="Altura +1 mm" onAction="Prumo_Action"/>
+                <button id="HeightMinus" label="Altura −1 mm" onAction="Prumo_Action"/>
+                <menuSeparator id="sTam2"/>
+                <button id="MagicResizer" label="Redimensionar em % (tamanho, linha e fonte)…" onAction="Prumo_Action"/>
+                <menuSeparator id="sTam3"/>
+                <button id="FillLeft" label="Preencher até a vizinha à esquerda" onAction="Prumo_Action"/>
+                <button id="FillRight" label="Preencher até a vizinha à direita" onAction="Prumo_Action"/>
+                <button id="FillUp" label="Preencher até a vizinha acima" onAction="Prumo_Action"/>
+                <button id="FillDown" label="Preencher até a vizinha abaixo" onAction="Prumo_Action"/>
+              </menu>
+              <menu id="mEspaco" label="Espaço" imageMso="AlignDistributeHorizontally">
+                <button id="StackH" label="Empilhar →" onAction="Prumo_Action"/>
+                <button id="StackV" label="Empilhar ↓" onAction="Prumo_Action"/>
+                <button id="DistH" label="Distribuir ↔" onAction="Prumo_Action"/>
+                <button id="DistV" label="Distribuir ↕" onAction="Prumo_Action"/>
+                <menuSeparator id="sEsp"/>
+                <button id="GapHPlus" label="Abrir na horizontal (+1 mm)" onAction="Prumo_Action"/>
+                <button id="GapHMinus" label="Fechar na horizontal (−1 mm)" onAction="Prumo_Action"/>
+                <button id="GapVPlus" label="Abrir na vertical (+1 mm)" onAction="Prumo_Action"/>
+                <button id="GapVMinus" label="Fechar na vertical (−1 mm)" onAction="Prumo_Action"/>
+              </menu>
+              <menu id="mPosicao" label="Posição" imageMso="ObjectBringToFront">
+                <button id="DockLeft" label="Encostar à esquerda da última" onAction="Prumo_Action"/>
+                <button id="DockRight" label="Encostar à direita da última" onAction="Prumo_Action"/>
+                <button id="DockUp" label="Encostar acima da última" onAction="Prumo_Action"/>
+                <button id="DockDown" label="Encostar abaixo da última" onAction="Prumo_Action"/>
+                <menuSeparator id="sPos1"/>
+                <button id="StretchLeft" label="Esticar até a esquerda da última" onAction="Prumo_Action"/>
+                <button id="StretchRight" label="Esticar até a direita da última" onAction="Prumo_Action"/>
+                <button id="StretchUp" label="Esticar até o topo da última" onAction="Prumo_Action"/>
+                <button id="StretchDown" label="Esticar até a base da última" onAction="Prumo_Action"/>
+                <menuSeparator id="sPos2"/>
+                <button id="Swap" label="Trocar" onAction="Prumo_Action"/>
+                <button id="SwapCentered" label="Trocar centros" onAction="Prumo_Action"/>
+                <button id="DupRight" label="Duplicar →" onAction="Prumo_Action"/>
+                <button id="DupDown" label="Duplicar ↓" onAction="Prumo_Action"/>
+                <menuSeparator id="sPos3"/>
+                <button id="AlignInTable" label="Encaixar nas células da tabela" onAction="Prumo_Action"/>
+                <menuSeparator id="sPos4"/>
+                <button id="SwapH" label="Trocar só na horizontal" onAction="Prumo_Action"/>
+                <button id="SwapV" label="Trocar só na vertical" onAction="Prumo_Action"/>
+                <button id="SwapHC" label="Trocar na horizontal, pelos centros" onAction="Prumo_Action"/>
+                <button id="SwapVC" label="Trocar na vertical, pelos centros" onAction="Prumo_Action"/>
+                <button id="DupLeft" label="Duplicar ←" onAction="Prumo_Action"/>
+                <button id="DupUp" label="Duplicar ↑" onAction="Prumo_Action"/>
+                <menuSeparator id="sPos5"/>
+                <button id="CornerTL" label="Centralizar no canto superior esquerdo da última" onAction="Prumo_Action"/>
+                <button id="CornerTR" label="Centralizar no canto superior direito da última" onAction="Prumo_Action"/>
+                <button id="CornerBL" label="Centralizar no canto inferior esquerdo da última" onAction="Prumo_Action"/>
+                <button id="CornerBR" label="Centralizar no canto inferior direito da última" onAction="Prumo_Action"/>
+                <menuSeparator id="sPos6"/>
+                <button id="Matrix" label="Organizar em grade…" onAction="Prumo_Action"/>
+                <button id="Circle" label="Organizar em círculo" onAction="Prumo_Action"/>
+                <button id="Golden" label="Proporção áurea" onAction="Prumo_Action"/>
+              </menu>
+              <menu id="mForma" label="Forma" imageMso="ShapeRectangle">
+                <button id="ProcessChain" label="Cadeia de processo (encaixar chevrons)" onAction="Prumo_Action"/>
+                <button id="MatchAdjust" label="Igualar pontas e cantos à última" onAction="Prumo_Action"/>
+              </menu>
+              <menu id="mMemoria" label="Memória" imageMso="FileSave">
+                <button id="MemSave" label="Memorizar posição e tamanho" onAction="Prumo_Action"/>
+                <button id="MemPos" label="Aplicar posição" onAction="Prumo_Action"/>
+                <button id="MemSize" label="Aplicar tamanho" onAction="Prumo_Action"/>
+                <button id="MemBoth" label="Aplicar ambos" onAction="Prumo_Action"/>
+                <button id="MemWidth" label="Só a largura" onAction="Prumo_Action"/>
+                <button id="MemHeight" label="Só a altura" onAction="Prumo_Action"/>
+                <menu id="mAncora" label="Aplicar por âncora">
+                  <button id="MemTL" label="Superior esquerda" onAction="Prumo_Action"/><button id="MemTC" label="Superior centro" onAction="Prumo_Action"/><button id="MemTR" label="Superior direita" onAction="Prumo_Action"/>
+                  <button id="MemML" label="Meio esquerda" onAction="Prumo_Action"/><button id="MemMC" label="Centro" onAction="Prumo_Action"/><button id="MemMR" label="Meio direita" onAction="Prumo_Action"/>
+                  <button id="MemBL" label="Inferior esquerda" onAction="Prumo_Action"/><button id="MemBC" label="Inferior centro" onAction="Prumo_Action"/><button id="MemBR" label="Inferior direita" onAction="Prumo_Action"/>
+                </menu>
+              </menu>
+              <menu id="mTexto" label="Texto" imageMso="TextBoxInsert">
+                <button id="LangPT" label="Revisão em português (Brasil)" onAction="Prumo_Action"/>
+                <button id="LangEN" label="Revisão em inglês (EUA)" onAction="Prumo_Action"/>
+                <button id="Spelling" label="Verificar ortografia" onAction="Prumo_Action"/>
+                <menuSeparator id="sTx1"/>
+                <button id="FitToText" label="Ajustar a forma ao texto" onAction="Prumo_Action"/>
+                <button id="WrapText" label="Quebrar texto (liga/desliga)" onAction="Prumo_Action"/>
+                <button id="SplitText" label="Dividir a caixa (uma por parágrafo)" onAction="Prumo_Action"/>
+                <button id="MergeText" label="Juntar caixas de texto" onAction="Prumo_Action"/>
+                <button id="Footnote" label="Nota de rodapé" onAction="Prumo_Action"/>
+                <button id="ReplaceTexts" label="Substituir ou apagar textos…" onAction="Prumo_Action"/>
+                <menuSeparator id="sTx2"/>
+                <button id="MarginPlus" label="Margens +1 mm" onAction="Prumo_Action"/>
+                <button id="MarginMinus" label="Margens −1 mm" onAction="Prumo_Action"/>
+                <button id="MarginZero" label="Margens zero" onAction="Prumo_Action"/>
+                <menu id="mMargemLado" label="Margem por lado">
+                  <button id="MarginHPlus" label="Esquerda e direita +1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginHMinus" label="Esquerda e direita −1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginVPlus" label="Topo e base +1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginVMinus" label="Topo e base −1 mm" onAction="Prumo_Action"/>
+                  <menuSeparator id="sMg"/>
+                  <button id="MarginLPlus" label="Esquerda +1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginLMinus" label="Esquerda −1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginRPlus" label="Direita +1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginRMinus" label="Direita −1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginTPlus" label="Topo +1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginTMinus" label="Topo −1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginBPlus" label="Base +1 mm" onAction="Prumo_Action"/>
+                  <button id="MarginBMinus" label="Base −1 mm" onAction="Prumo_Action"/>
+                </menu>
+              </menu>
+              <menu id="mCor" label="Cor" imageMso="FontColorPicker">
+                <button id="LastFill" label="Repetir último preenchimento" onAction="Prumo_Action"/>
+                <button id="LastLine" label="Repetir última cor de linha" onAction="Prumo_Action"/>
+                <button id="LastFont" label="Repetir última cor de texto" onAction="Prumo_Action"/>
+                <menuSeparator id="sCor1"/>
+                <button id="FillNone" label="Sem preenchimento" onAction="Prumo_Action"/>
+                <button id="LineNone" label="Sem linha" onAction="Prumo_Action"/>
+                <menuSeparator id="sCor2"/>
+                <button id="CopyFill" label="Preenchimento da última" onAction="Prumo_Action"/>
+                <button id="CopyLine" label="Linha da última" onAction="Prumo_Action"/>
+                <button id="CopyFont" label="Cor do texto da última" onAction="Prumo_Action"/>
+                <menuSeparator id="sCor3"/>
+                <button id="ToRGB" label="Converter cores do tema em RGB" onAction="Prumo_Action"/>
+                <button id="ToTheme" label="Converter RGB em cores do tema" onAction="Prumo_Action"/>
+              </menu>
+              <menu id="mNavegacao" label="Navegação e visibilidade" imageMso="ViewRulerPowerPoint">
+                <button id="GoToSlide" label="Ir para o slide…" onAction="Prumo_Action"/>
+                <button id="SlidePrev" label="Slide anterior" onAction="Prumo_Action"/>
+                <button id="SlideNext" label="Próximo slide" onAction="Prumo_Action"/>
+                <menuSeparator id="sNav"/>
+                <button id="HideShapes" label="Ocultar formas selecionadas" onAction="Prumo_Action"/>
+                <button id="UnhideShapes" label="Reexibir formas ocultas do slide" onAction="Prumo_Action"/>
+                <button id="MasterShapes" label="Mostrar/esconder formas do mestre" onAction="Prumo_Action"/>
+                <button id="SelectSimilar" label="Selecionar formas parecidas" onAction="Prumo_Action"/>
+              </menu>
+              <menu id="mApresentacao" label="Apresentação" imageMso="FileSave">
+                <button id="SaveSelected" label="Salvar só os slides selecionados" onAction="Prumo_Action"/>
+                <button id="SlidesAsPictures" label="Inserir slides selecionados como imagem" onAction="Prumo_Action"/>
+                <button id="BlackWhite" label="Modo preto e branco" onAction="Prumo_Action"/>
+              </menu>
+              <menu id="mLimpeza" label="Limpeza" imageMso="Delete">
+                <button id="CleanAnimations" label="Remover animações" onAction="Prumo_Action"/>
+                <button id="CleanNotes" label="Remover anotações" onAction="Prumo_Action"/>
+                <button id="CleanAltText" label="Remover textos alternativos" onAction="Prumo_Action"/>
+                <button id="CleanLayouts" label="Remover layouts não usados" onAction="Prumo_Action"/>
+              </menu>
+          </menu>
+        </group>
+
+        <group id="gExibir" label="Exibir">
+          <control idMso="ViewRulerPowerPoint" showLabel="false"/>
+        </group>
+
+        <group id="gSlide" label="Slide">
+          <control idMso="SlideLayoutGallery" showLabel="false"/>
+          <control idMso="SlideReset" showLabel="false"/>
+        </group>
+
+        <group id="gMidia" label="Mídia">
+          <control idMso="SoundInsertMenu02" showLabel="false"/>
+          <control idMso="MovieInsert02" showLabel="false"/>
+        </group>
+
+        <group id="gClipboard" label="Área de transferência">
+          <buttonGroup id="bgClip1">
+            <control idMso="Copy" showLabel="false"/>
+            <control idMso="FormatPainter" showLabel="false"/>
+          </buttonGroup>
+          <buttonGroup id="bgClip2">
+            <control idMso="Cut" showLabel="false"/>
+            <splitButton id="spColar">
+              <button idMso="Paste" showLabel="false"/>
+              <menu id="mColar">
+                <control idMso="PasteSpecialDialog"/>
+                <button id="PasteOnSlides" label="Colar nos slides selecionados" imageMso="Paste" onAction="Prumo_Action" screentip="Cola a área de transferência em cada slide selecionado nas miniaturas"/>
+              </menu>
+            </splitButton>
+          </buttonGroup>
+          <buttonGroup id="bgClip3">
+            <control idMso="Undo" showLabel="false"/>
+            <control idMso="RedoOrRepeat" showLabel="false"/>
+          </buttonGroup>
+        </group>
+
+        <group id="gTexto" label="Texto">
+          <box id="boxFonte">
+            <control idMso="Font" showLabel="false"/>
+            <control idMso="FontSize" showLabel="false"/>
+          </box>
+          <buttonGroup id="bgTexto1">
+            <control idMso="Bold" showLabel="false"/>
+            <control idMso="Italic" showLabel="false"/>
+            <control idMso="ChangeCaseGallery" showLabel="false"/>
+            <control idMso="FontSizeIncrease" showLabel="false"/>
+            <control idMso="FontSizeDecrease" showLabel="false"/>
+          </buttonGroup>
+          <buttonGroup id="bgTexto2">
+            <control idMso="AlignLeft" showLabel="false"/>
+            <control idMso="AlignCenter" showLabel="false"/>
+            <control idMso="AlignRight" showLabel="false"/>
+            <control idMso="IndentDecrease" showLabel="false"/>
+            <control idMso="IndentIncrease" showLabel="false"/>
+          </buttonGroup>
+          <control idMso="LineSpacingGalleryPowerPoint" showLabel="false"/>
+          <control idMso="TextAlignGallery" showLabel="false"/>
+        </group>
+
+        <group id="gDesenho" label="Desenho">
+          <control idMso="ShapesInsertGallery" showLabel="false"/>
+          <control idMso="TextBoxInsert" showLabel="false"/>
+          <control idMso="ShapeRectangle" showLabel="false"/>
+          <control idMso="ShapeOval" showLabel="false"/>
+          <control idMso="ShapeStraightConnector" showLabel="false"/>
+          <control idMso="ShapeStraightConnectorArrow" showLabel="false"/>
+          <control idMso="ShapeElbowConnector" showLabel="false"/>
+          <control idMso="ObjectEditShapeMenu" showLabel="false"/>
+          <control idMso="OutlineDashesGallery" showLabel="false"/>
+          <control idMso="ObjectsGroup" showLabel="false"/>
+          <control idMso="ObjectsUngroup" showLabel="false"/>
+          <control idMso="ObjectsRegroup" showLabel="false"/>
+          <control idMso="ObjectFlipHorizontal" showLabel="false"/>
+          <control idMso="ObjectFlipVertical" showLabel="false"/>
+          <control idMso="ObjectRotateLeft90" showLabel="false"/>
+          <control idMso="ObjectRotateRight90" showLabel="false"/>
+          <control idMso="ObjectBringToFront" showLabel="false"/>
+          <control idMso="ObjectSendToBack" showLabel="false"/>
+        </group>
+
+        <group id="gRevisao" label="Revisão">
+          <button id="CommentDeleteAll" label="Apagar comentários" imageMso="ReviewDeleteComment" showLabel="false" onAction="Prumo_Action" screentip="Apagar todos os comentários" supertip="Remove todas as caixas de comentário do Prumo da apresentação (pede confirmação)."/>
+          <button id="CommentNext" label="Próximo comentário" imageMso="ReviewNextComment" showLabel="false" onAction="Prumo_Action" screentip="Próximo comentário" supertip="Vai ao próximo comentário a partir do slide atual."/>
+          <button id="CommentInsert" label="Comentário" imageMso="ReviewNewComment" showLabel="false" onAction="Prumo_Action" screentip="Inserir comentário" supertip="Caixa amarela com suas iniciais e a data, no centro do slide, pronta para digitar."/>
+          <separator id="sepRev1"/>
+          <button id="StickerDeleteAll" label="Apagar stickers" image="stkDelete" showLabel="false" onAction="Prumo_Action" screentip="Apagar todos os stickers" supertip="Remove os stickers de status de todos os slides (pede confirmação)."/>
+          <button id="StickerNext" label="Próximo sticker" image="stkNext" showLabel="false" onAction="Prumo_Action" screentip="Próximo sticker" supertip="Vai ao próximo slide com sticker de status."/>
+          <button id="StickerReview" label="Sticker" image="stkReview" showLabel="false" onAction="Prumo_Action" screentip="Sticker de status: Revisar" supertip="Etiqueta no canto superior direito do slide. Outros status no menu ao lado."/>
+          <menu id="mSticker" label="Outros stickers" showLabel="false" image="stkOther" screentip="Outros stickers de status" supertip="Rascunho, em andamento ou pronto.">
+            <button id="StickerDraft" label="Rascunho" image="stkDraft" onAction="Prumo_Action"/>
+            <button id="StickerWip" label="Em andamento" image="stkWip" onAction="Prumo_Action"/>
+            <button id="StickerDone" label="Pronto" image="stkDone" onAction="Prumo_Action"/>
+          </menu>
+          <separator id="sepRev2"/>
+          <button id="PageNumbersDelete" label="Tirar números" imageMso="Delete" showLabel="false" onAction="Prumo_Action" screentip="Tirar números de página" supertip="Remove os números inseridos pelo Prumo."/>
+          <button id="PageNumbers" label="Numerar páginas" imageMso="TextBoxInsert" showLabel="false" onAction="Prumo_Action" screentip="Numerar páginas" supertip="Insere ou atualiza o número em cada slide; a capa fica sem."/>
+          <separator id="sepRev3"/>
+          <button id="AgendaDelete" label="Apagar agenda" image="agendaDel" showLabel="false" onAction="Prumo_Action" screentip="Apagar slides de agenda" supertip="Remove os slides de agenda criados pelo Prumo (pede confirmação)."/>
+          <button id="AgendaUpdate" label="Agenda" image="agenda" showLabel="false" onAction="Prumo_Action" screentip="Criar ou atualizar a agenda" supertip="Cada seção da apresentação (menos a 1ª, da capa) vira um item. Antes de cada seção entra um slide de agenda com o item em destaque. Rodar de novo refaz tudo."/>
+        </group>
+
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
