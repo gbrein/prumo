@@ -83,6 +83,29 @@ def test_painel_so_chama_acoes_que_existem():
     assert set(ids) <= cases, f"sem Case no VBA: {set(ids) - cases}"
 
 
+def test_painel_windows_em_dia():
+    from gen_panel import panel_tsv
+    assert (ROOT / "win" / "panel.tsv").read_bytes().decode("utf-8") == panel_tsv(), "rode build/gen_panel.py"
+    rows = [r.split("	") for r in panel_tsv().splitlines()]
+    assert all(len(r) == {"S": 3, "I": 7, "M": 3}[r[0]] for r in rows), "linha mal formada em panel.tsv"
+    swift = (ROOT / "panel" / "PrumoPainel.swift").read_text(encoding="utf-8")
+    assert len([r for r in rows if r[0] == "I"]) == len(re.findall(r'Item\(id: "', swift)), "item do Mac sem par no Windows"
+
+
+def test_so_mac_fica_atras_de_if_mac():
+    # no Windows, AppleScriptTask nem compila e as bibliotecas do macOS não existem
+    for bas in (ROOT / "src").glob("*.bas"):
+        mac = False
+        for line in bas.read_text(encoding="ascii").splitlines():
+            t = line.strip()
+            if t.startswith("#If Mac"):
+                mac = True
+            elif t.startswith("#Else") or t.startswith("#End If"):
+                mac = False
+            elif not t.startswith("'") and re.search(r"AppleScriptTask|dlopen|notify_post|Environ\(\"(TMPDIR|USER)\"\)", t):
+                assert mac, f"{bas.name}: {t}"
+
+
 def test_bas_sao_ascii_e_crlf():
     # o editor VBA do Mac importa .bas em codificação legada: acentos quebram
     for bas in (ROOT / "src").glob("*.bas"):

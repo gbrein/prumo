@@ -4,6 +4,17 @@ Option Explicit
 ' Autoteste: cria uma apresentacao temporaria, exercita as acoes e fecha sem salvar.
 ' Rodar em Ferramentas > Macro > Prumo_SelfTest.
 Public Sub Prumo_SelfTest()
+    Dim fails As String
+    fails = Prumo_SelfTestRun()
+    If fails = "" Then
+        MsgBox "Prumo: todos os testes passaram.", vbInformation, "Prumo"
+    Else
+        MsgBox "Prumo: falhas em " & fails, vbExclamation, "Prumo"
+    End If
+End Sub
+
+' Devolve as falhas ("" = tudo certo). O build do Windows chama por Application.Run.
+Public Function Prumo_SelfTestRun() As String
     Dim pres As Presentation, sld As Slide, a As Shape, b As Shape, r As ShapeRange, d As ShapeRange
     Dim fails As String, n As Long, c As Shape, t As Shape, e As Shape, rh As Single, f As Shape, g As Shape, h As Shape
 
@@ -173,16 +184,12 @@ Fim:
     pres.Saved = msoTrue
     pres.Close
     On Error GoTo 0
-    If fails = "" Then
-        MsgBox "Prumo: todos os testes passaram.", vbInformation, "Prumo"
-    Else
-        MsgBox "Prumo: falhas em " & fails, vbExclamation, "Prumo"
-    End If
-    Exit Sub
+    Prumo_SelfTestRun = fails
+    Exit Function
 Erro:
     fails = fails & "[erro: " & Err.Description & "] "
     Resume Fim
-End Sub
+End Function
 
 Private Sub Check(fails As String, name As String, ByVal ok As Boolean)
     If Not ok Then fails = fails & "[" & name & "] "
@@ -196,5 +203,7 @@ End Function
 ' O SaveAs do Mac nao tem o formato .ppam: salva .pptm e o build.py converte.
 ' HOME aponta para o container do sandbox, por isso o caminho usa USER.
 Public Sub Prumo_BuildAddIn()
+#If Mac Then  ' no Windows o build e o win\build.ps1
     ActivePresentation.SaveAs "/Users/" & Environ("USER") & "/git/vault/repos/prumo/dist/Prumo.pptm", ppSaveAsOpenXMLPresentationMacroEnabled
+#End If
 End Sub

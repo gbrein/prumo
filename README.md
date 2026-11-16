@@ -1,6 +1,6 @@
 # Prumo
 
-Suplemento gratuito para o **PowerPoint no Mac** que acelera o trabalho braçal de montar slides: alinhar, dimensionar, distribuir, padronizar cores e margens, numerar páginas, criar agenda e revisar.
+Suplemento gratuito para o **PowerPoint no Mac e no Windows** que acelera o trabalho braçal de montar slides: alinhar, dimensionar, distribuir, padronizar cores e margens, numerar páginas, criar agenda e revisar.
 
 ![Prumo no PowerPoint: aba Prumo no ribbon e painel lateral com as ferramentas](docs/prumo.png)
 
@@ -9,9 +9,9 @@ Suplemento gratuito para o **PowerPoint no Mac** que acelera o trabalho braçal 
 - **100% offline:** não envia nada para a internet, não tem conta nem telemetria.
 - Código aberto (MIT), escrito do zero em VBA e Swift.
 
-> A interface está em português. O Prumo foi feito e testado no PowerPoint para Mac (Microsoft 365, Apple Silicon e Intel, macOS 12 ou mais novo). No Windows não funciona.
+> A interface está em português. O Prumo funciona no PowerPoint do Microsoft 365 para Mac (Apple Silicon e Intel, macOS 12 ou mais novo) e para Windows (10 ou 11). O `.ppam` é o mesmo nos dois; só o painel lateral muda: no Mac é nativo em Swift, no Windows é um add-in COM em C#.
 
-## Instalação
+## Instalação no Mac
 
 ### Jeito rápido (recomendado)
 
@@ -43,7 +43,7 @@ O script ([install.sh](install.sh)) baixa a versão mais recente da página de [
 
 Rode de novo o comando do jeito rápido e reinicie o PowerPoint.
 
-### Desinstalar
+### Desinstalar (Mac)
 
 1. No PowerPoint, vá em **Ferramentas › Suplementos do PowerPoint**, selecione **Prumo** e clique em **−**.
 2. Apague a pasta:
@@ -51,6 +51,26 @@ Rode de novo o comando do jeito rápido e reinicie o PowerPoint.
    ```sh
    rm -rf ~/Library/Application\ Support/Microsoft/Prumo ~/Library/Application\ Scripts/com.microsoft.Powerpoint/Prumo.scpt
    ```
+
+## Instalação no Windows
+
+1. Feche o PowerPoint.
+2. Abra o **PowerShell** (tecla Windows, digite "PowerShell", Enter), cole a linha abaixo e tecle Enter:
+
+   ```powershell
+   irm https://raw.githubusercontent.com/gbrein/prumo/main/win/install.ps1 | iex
+   ```
+
+3. Abra o PowerPoint. A aba **Prumo** aparece no ribbon e o painel abre à direita. Se o PowerPoint perguntar sobre macros, clique em **Habilitar**.
+
+O script ([win/install.ps1](win/install.ps1)) baixa `Prumo.ppam` e `PrumoPanel.dll` da página de [Releases](https://github.com/gbrein/prumo/releases) para `%APPDATA%\Prumo\` e registra os dois só para o seu usuário, sem pedir administrador. Para atualizar, rode de novo a mesma linha.
+
+Com os arquivos já baixados numa pasta, ou para desinstalar:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File install.ps1 -From C:\caminho\da\pasta
+powershell -ExecutionPolicy Bypass -File install.ps1 -Uninstall
+```
 
 ## Como usar
 
@@ -127,7 +147,8 @@ Botões com uma setinha (˅) têm variações: clique na setinha para ver o menu
 
 ## Limitações conhecidas
 
-- **Só no Mac.** O painel é um componente nativo do macOS.
+- **No Windows, ícones diferentes.** O painel do Windows usa ícones do próprio Office e símbolos da fonte Segoe UI Symbol, porque os ícones do Mac (SF Symbols) só podem ser usados em sistemas da Apple. As ações são as mesmas.
+- **No Windows, as perguntas e os avisos** aparecem em caixas do próprio PowerPoint, não no rodapé do painel.
 - Ortografia, preto e branco, slides como imagem e salvar selecionados usam recursos do PowerPoint que podem se comportar diferente conforme a versão do Office. Se algo não funcionar, [abra uma issue](https://github.com/gbrein/prumo/issues).
 - **Se o PowerPoint travar ao abrir por causa do painel**, crie o arquivo `disable` na pasta do Prumo. O painel deixa de carregar, e o resto continua funcionando:
 
@@ -137,7 +158,7 @@ Botões com uma setinha (˅) têm variações: clique na setinha para ver o menu
 
 ## Privacidade
 
-O Prumo roda inteiro no seu Mac. A única informação pessoal que ele lê é o seu nome de usuário do macOS, para as iniciais dos comentários, e ela nunca sai do computador.
+O Prumo roda inteiro no seu computador. A única informação pessoal que ele lê é o seu nome, para as iniciais dos comentários: no Mac, o nome do usuário do macOS; no Windows, o nome de usuário do Office. Ele nunca sai do computador.
 
 ## Para desenvolvedores
 
@@ -145,10 +166,11 @@ O Prumo roda inteiro no seu Mac. A única informação pessoal que ele lê é o 
 |---|---|
 | `src/*.bas` | O VBA: `modLayout` (posição e tamanho), `modText` (texto e cor), `modSlides` (apresentação e revisão), `modRibbon` (despacho das ações), `modPanel` (gerado), `modTests` (autoteste e montagem). |
 | `src/customUI14.xml`, `src/icons/` | O ribbon e os ícones próprios dele. |
-| `panel/` | O painel em Swift (`PrumoPainel.swift`), o construtor em C (`ctor.c`) e o AppleScript das iniciais. |
-| `build/` | `build.py` (injeta o ribbon e gera o `.ppam`), `gen_panel.py` (gera `modPanel.bas`), `icons.swift` (gera os PNGs). |
+| `panel/` | O painel do Mac em Swift (`PrumoPainel.swift`), o construtor em C (`ctor.c`) e o AppleScript das iniciais. |
+| `win/` | O painel do Windows em C# (`PrumoPanel.cs`), a lista de botões gerada (`panel.tsv`), o build (`build.ps1`) e o instalador (`install.ps1`). |
+| `build/` | `build.py` (injeta o ribbon e gera o `.ppam`), `gen_panel.py` (gera `modPanel.bas` e `win/panel.tsv`), `icons.swift` (gera os PNGs). |
 
-### Montar o `.ppam`
+### Montar o `.ppam` no Mac
 
 O editor de VBA do Mac não tem modelo de objetos, e o "Salvar como" do Mac não oferece o formato `.ppam`. Por isso a montagem tem um passo manual:
 
@@ -158,16 +180,30 @@ O editor de VBA do Mac não tem modelo de objetos, e o "Salvar como" do Mac não
 4. `python3 build/build.py dist/Prumo.pptm` injeta o ribbon e os ícones, tira os metadados pessoais e gera `dist/Prumo.ppam`.
 5. `panel/build.sh` compila o painel (universal, macOS 12+) e o instala. Depois, `sh install.sh dist` instala o resto a partir da pasta local.
 
+### Montar no Windows
+
+No Windows o PowerPoint tem modelo de objetos do VBA, então a montagem é um comando só (precisa de PowerPoint fechado e Python 3; o compilador C# já vem com o Windows):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File winuild.ps1
+powershell -ExecutionPolicy Bypass -File win\install.ps1 -From dist
+```
+
+O `build.ps1` regenera `win/panel.tsv`, compila `dist/PrumoPanel.dll`, importa os `.bas` numa apresentação nova, roda o `Prumo_SelfTestRun` e chama o `build.py`. Para importar o VBA, ele liga a opção "Confiar no acesso ao modelo de objeto do projeto do VBA" só durante a montagem e devolve como estava depois. O `.ppam` gerado no Windows é o mesmo que roda no Mac. No release, publique `Prumo.ppam`, `libprumo.dylib`, `Prumo.applescript` e `PrumoPanel.dll`.
+
 Regras da casa:
 - Os `.bas` ficam em ASCII com CRLF; os testes conferem.
 - Cada `Case` de `modRibbon.bas` cabe numa linha só.
-- Depois de mudar um `Case`, rode `python3 build/gen_panel.py`.
+- Depois de mudar um `Case` ou um botão do painel do Mac, rode `python3 build/gen_panel.py`: o painel do Mac é a fonte dos dois painéis.
+- O que só existe no Mac (`AppleScriptTask`, `dlopen`, `TMPDIR`) fica dentro de `#If Mac Then`; os testes conferem.
 - Recursos que talvez não existam no VBA do Mac usam ligação tardia (`Object`).
 - O painel já carregado só é trocado reiniciando o PowerPoint.
 
 ### Como o painel funciona
 
-A `libprumo.dylib` é carregada **dentro** do PowerPoint: o VBA faz `dlopen` quando o suplemento carrega. Ela entra como mais uma coluna no divisor da janela, ao lado dos painéis nativos. Cada botão roda a macro `PrumoP_<id>` com um Apple event do PowerPoint para ele mesmo, sem pedir permissão. Os arquivos ficam em `~/Library/Application Support/Microsoft/`, a única pasta da casa que o sandbox do PowerPoint lê.
+No Mac, a `libprumo.dylib` é carregada **dentro** do PowerPoint: o VBA faz `dlopen` quando o suplemento carrega. Ela entra como mais uma coluna no divisor da janela, ao lado dos painéis nativos. Cada botão roda a macro `PrumoP_<id>` com um Apple event do PowerPoint para ele mesmo, sem pedir permissão. Os arquivos ficam em `~/Library/Application Support/Microsoft/`, a única pasta da casa que o sandbox do PowerPoint lê.
+
+No Windows, o `PrumoPanel.dll` é um add-in COM sem VSTO, registrado só para o usuário (`HKCU`). Ele põe um Custom Task Pane, o mesmo painel lateral fixo dos add-ins do Office, em cada janela de apresentação. Cada botão roda `PrumoP_<id>` por `Application.Run`. O botão **Painel** do ribbon chega a ele por `COMAddIns("Prumo.Panel").Object.Show`. Para diagnosticar, crie o arquivo `%TEMP%\prumo_trace`: o painel passa a registrar os passos em `%TEMP%\prumo_panel.log`.
 
 ### Testes
 
@@ -176,8 +212,10 @@ A `libprumo.dylib` é carregada **dentro** do PowerPoint: o VBA faz `dlopen` qua
   - a remoção dos metadados;
   - que todo botão tem ação no VBA;
   - que o painel só chama ações que existem;
+  - que `win/panel.tsv` está em dia com o painel do Mac;
+  - que o código só do Mac está dentro de `#If Mac Then`;
   - que os `.bas` estão em ASCII com CRLF.
-- `Prumo_SelfTest`, no PowerPoint, cria uma apresentação temporária, exercita as ações e fecha sem salvar.
+- `Prumo_SelfTest`, no PowerPoint (no Windows, o `winuild.ps1` roda sozinho), cria uma apresentação temporária, exercita as ações e fecha sem salvar.
 
 ## Licença
 

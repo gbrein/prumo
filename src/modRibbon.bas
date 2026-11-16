@@ -1,10 +1,13 @@
 Attribute VB_Name = "modRibbon"
 Option Explicit
 
-' Painel lateral: biblioteca nativa carregada dentro do PowerPoint (como janela-filha, fixa na janela).
+' Painel lateral no Mac: biblioteca nativa carregada dentro do PowerPoint (como janela-filha, fixa na janela).
 ' O sandbox do PowerPoint so le de ~/Library/Application Support/Microsoft/, por isso ela fica la.
+' No Windows o painel e o add-in COM "Prumo.Panel" (win/), que chama os PrumoP_ por Application.Run.
+#If Mac Then
 Private Declare PtrSafe Function dlopen Lib "/usr/lib/libSystem.B.dylib" (ByVal path As String, ByVal mode As Long) As LongPtr
 Private Declare PtrSafe Function notify_post Lib "/usr/lib/libSystem.B.dylib" (ByVal name As String) As Long
+#End If
 
 ' Verdadeiro enquanto roda uma acao vinda do painel. No Mac com dois monitores, MsgBox/InputBox abrem fora da tela
 ' e travam o PowerPoint; por isso, vindo do painel, perguntas e confirmacoes chegam prontas (o painel pergunta
@@ -15,12 +18,14 @@ Private gPanelOn As Boolean
 
 ' Callback unico do ribbon: o id do botao escolhe a acao. Com o painel carregado, a acao vai por ele.
 Public Sub Prumo_Action(control As IRibbonControl)
+#If Mac Then
     If gPanelOn And control.ID <> "Panel" Then
         WriteCodes PanelFile("prumo_run.txt"), control.ID
         notify_post "com.gbrein.prumo.run"
-    Else
-        Prumo_Do control.ID
+        Exit Sub
     End If
+#End If
+    Prumo_Do control.ID
 End Sub
 
 ' Entrada comum do ribbon e do painel lateral: erro vira aviso, nunca a tela do VBA.
@@ -33,8 +38,11 @@ Falha:
 End Sub
 
 ' Entrada dos PrumoP_ (modPanel), chamados pelo painel.
+' No Windows as caixas do VBA abrem na janela certa: o painel nao precisa perguntar por elas.
 Public Sub Prumo_Panel(id As String)
+#If Mac Then
     gFromPanel = True
+#End If
     Prumo_Do id
     gFromPanel = False
 End Sub
@@ -72,7 +80,16 @@ End Function
 
 ' Arquivos de troca com o painel: na pasta temporaria do proprio PowerPoint (a mesma para o VBA e o painel).
 Private Function PanelFile(name As String) As String
-    PanelFile = Environ("TMPDIR") & name
+    PanelFile = TempDir() & name
+End Function
+
+' Pasta temporaria com a barra no fim.
+Public Function TempDir() As String
+#If Mac Then
+    TempDir = Environ("TMPDIR")
+#Else
+    TempDir = Environ("TEMP") & "\"
+#End If
 End Function
 
 Private Function PanelArg() As String
@@ -119,6 +136,7 @@ End Sub
 ' Carrega o painel (na 1a vez) e pede para ele aparecer (o X do painel esconde).
 ' Com o arquivo "disable" na pasta do painel, nao carrega (chave de seguranca, ver panel/ctor.c).
 Private Sub OpenPanel()
+#If Mac Then
     Dim dirPrumo As String
     dirPrumo = "/Users/" & Environ("USER") & "/Library/Application Support/Microsoft/Prumo/"
     If Len(Dir(dirPrumo & "disable")) > 0 Then Exit Sub
@@ -127,6 +145,15 @@ Private Sub OpenPanel()
     End If
     gPanelOn = True
     notify_post "com.gbrein.prumo.show"
+#Else
+    Dim a As Object
+    On Error Resume Next
+    Set a = Application.COMAddIns("Prumo.Panel")
+    On Error GoTo 0
+    If a Is Nothing Then Err.Raise vbObjectError + 14, , "painel nao instalado: rode win\install.ps1."
+    If Not a.Connect Then a.Connect = True
+    a.Object.Show
+#End If
 End Sub
 
 ' Tambem chamavel por nome (atalhos, AppleScript).

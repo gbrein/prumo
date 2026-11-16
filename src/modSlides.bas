@@ -82,13 +82,19 @@ Public Sub InsertCommentHere()
     If Err.Number <> 0 Then shp.Select  ' se o Mac recusar o cursor no texto, fica a forma selecionada
 End Sub
 
-' Iniciais do nome completo do usuario do Mac (via Prumo.scpt): primeira e ultima. Sem o script, usa o login.
+' Iniciais do nome completo do usuario (Mac: via Prumo.scpt; Windows: nome do Office): primeira e ultima. Sem nome, usa o login.
 Public Function UserInitials() As String
     Dim nome As String, p As Variant, r As String
     On Error Resume Next
+#If Mac Then
     nome = Trim$(AppleScriptTask("Prumo.scpt", "nomeUsuario", ""))
     On Error GoTo 0
     If nome = "" Then UserInitials = UCase$(Left$(Environ("USER"), 2)): Exit Function
+#Else
+    nome = Trim$(CreateObject("WScript.Shell").RegRead("HKCU\Software\Microsoft\Office\Common\UserInfo\UserName"))
+    On Error GoTo 0
+    If nome = "" Then UserInitials = UCase$(Left$(Environ("USERNAME"), 2)): Exit Function
+#End If
     For Each p In Split(nome, " ")
         If Len(p) > 0 Then r = r & UCase$(Left$(p, 1))
     Next
@@ -176,7 +182,7 @@ Public Sub InsertSlidesAsPictures(sr As SlideRange)
     cols = Int(Sqr(sr.Count - 1)) + 1
     cw = (pres.PageSetup.SlideWidth - 72 - (cols - 1) * GAP_PT) / cols
     For i = 1 To sr.Count
-        path = Environ("TMPDIR") & "prumo_slide_" & i & ".png"
+        path = TempDir() & "prumo_slide_" & i & ".png"
         Set src = sr(i)  ' Export por ligacao tardia (pode faltar no Mac)
         src.Export path, "PNG"
         Set pic = dst.Shapes.AddPicture(path, msoFalse, msoTrue, 36, 36)
@@ -196,7 +202,7 @@ Public Sub SaveSelectedSlides(sr As SlideRange)
     For i = 1 To sr.Count
         ids = ids & "[" & sr(i).SlideID & "]"
     Next
-    path = Environ("TMPDIR") & "prumo_selecao.pptx"
+    path = TempDir() & "prumo_selecao.pptx"
     pres.SaveCopyAs path
     Set cp = Presentations.Open(path, msoFalse, msoTrue, msoTrue)  ' somente leitura nao; sem titulo; com janela
     For i = cp.Slides.Count To 1 Step -1
