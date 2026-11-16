@@ -9,153 +9,158 @@ let WIDTH: CGFloat = 232
 let RIBBON_GAP: CGFloat = 145  // shortcut: altura fixa do ribbon expandido; medir a área do slide se incomodar
 let STATUS_GAP: CGFloat = 28   // barra de status do PowerPoint
 
-struct MenuEntry { let id, label: String }
-func M(_ id: String, _ label: String) -> MenuEntry { MenuEntry(id: id, label: label) }
+// Idioma: o da interface do PowerPoint (a biblioteca roda dentro dele). Português fica em português; outro, inglês.
+let isEN = !(Bundle.main.preferredLocalizations.first ?? "pt").hasPrefix("pt")
+func L(_ pt: String, _ en: String) -> String { isEN ? en : pt }
 
-// title: texto no lugar do ícone (EN/PT). menu: opções na setinha ao lado. colors: menu com as cores do tema (Fill/Line/Font).
+struct MenuEntry { let id, label, en: String }
+func M(_ id: String, _ label: String, _ en: String) -> MenuEntry { MenuEntry(id: id, label: label, en: en) }
+
+// tip/tipEN: dica em português e em inglês. title: texto no lugar do ícone (EN/PT). menu: opções na setinha ao lado.
+// colors: menu com as cores do tema (Fill/Line/Font).
 struct Item {
-    let id, symbol, tip: String
+    let id, symbol, tip, tipEN: String
     var tint: NSColor? = nil
     var title: String? = nil
     var menu: [MenuEntry] = []
     var colors: String? = nil
 }
-struct Section { let title: String; let items: [Item]; var colorBar = false }
+struct Section { let title, en: String; let items: [Item]; var colorBar = false }
 
 // Os ids são os Case de Prumo_Run (src/modRibbon.bas); tests/test_build.py confere.
 let SECTIONS: [Section] = [
-    Section(title: "Apresentação", items: [
-        Item(id: "PageNumbers", symbol: "number.square", tip: "Numerar páginas (a capa fica sem)"),
-        Item(id: "PageNumbersDelete", symbol: "number.square.fill", tip: "Tirar números de página"),
-        Item(id: "AgendaUpdate", symbol: "list.number", tip: "Agenda pelas seções: um slide antes de cada uma (apagar na seta)", menu: [
-            M("AgendaDelete", "Apagar slides de agenda"),
+    Section(title: "Apresentação", en: "Presentation", items: [
+        Item(id: "PageNumbers", symbol: "number.square", tip: "Numerar páginas (a capa fica sem)", tipEN: "Number pages (the cover gets none)"),
+        Item(id: "PageNumbersDelete", symbol: "number.square.fill", tip: "Tirar números de página", tipEN: "Remove page numbers"),
+        Item(id: "AgendaUpdate", symbol: "list.number", tip: "Agenda pelas seções: um slide antes de cada uma (apagar na seta)", tipEN: "Agenda from sections: one slide before each (delete in the arrow)", menu: [
+            M("AgendaDelete", "Apagar slides de agenda", "Delete agenda slides"),
         ]),
-        Item(id: "PasteOnSlides", symbol: "doc.on.clipboard", tip: "Colar nos slides selecionados nas miniaturas"),
-        Item(id: "SaveSelected", symbol: "square.and.arrow.down.on.square", tip: "Salvar só os slides selecionados (abre uma cópia)"),
-        Item(id: "SlidesAsPictures", symbol: "photo.on.rectangle", tip: "Inserir os slides selecionados como imagens num slide novo"),
-        Item(id: "CleanAnimations", symbol: "sparkles", tip: "Limpeza: remover animações (mais na seta)", menu: [
-            M("CleanNotes", "Remover anotações"), M("CleanAltText", "Remover textos alternativos"),
-            M("CleanLayouts", "Remover layouts não usados"),
+        Item(id: "PasteOnSlides", symbol: "doc.on.clipboard", tip: "Colar nos slides selecionados nas miniaturas", tipEN: "Paste on the slides selected in the thumbnails"),
+        Item(id: "SaveSelected", symbol: "square.and.arrow.down.on.square", tip: "Salvar só os slides selecionados (abre uma cópia)", tipEN: "Save only the selected slides (opens a copy)"),
+        Item(id: "SlidesAsPictures", symbol: "photo.on.rectangle", tip: "Inserir os slides selecionados como imagens num slide novo", tipEN: "Insert the selected slides as pictures on a new slide"),
+        Item(id: "CleanAnimations", symbol: "sparkles", tip: "Limpeza: remover animações (mais na seta)", tipEN: "Cleanup: remove animations (more in the arrow)", menu: [
+            M("CleanNotes", "Remover anotações", "Remove notes"), M("CleanAltText", "Remover textos alternativos", "Remove alt texts"),
+            M("CleanLayouts", "Remover layouts não usados", "Remove unused layouts"),
         ]),
-        Item(id: "BlackWhite", symbol: "circle.lefthalf.filled", tip: "Modo preto e branco (liga/desliga)"),
+        Item(id: "BlackWhite", symbol: "circle.lefthalf.filled", tip: "Modo preto e branco (liga/desliga)", tipEN: "Black and white mode (on/off)"),
     ]),
-    Section(title: "Posição", items: [
-        Item(id: "AlignLeft", symbol: "align.horizontal.left", tip: "Alinhar à esquerda da última"),
-        Item(id: "AlignCenter", symbol: "align.horizontal.center", tip: "Centralizar com a última (horizontal)"),
-        Item(id: "AlignRight", symbol: "align.horizontal.right", tip: "Alinhar à direita da última"),
-        Item(id: "AlignTop", symbol: "align.vertical.top", tip: "Alinhar ao topo da última"),
-        Item(id: "AlignMiddle", symbol: "align.vertical.center", tip: "Centralizar com a última (vertical)"),
-        Item(id: "AlignBottom", symbol: "align.vertical.bottom", tip: "Alinhar à base da última"),
-        Item(id: "DockLeft", symbol: "arrow.left.to.line", tip: "Encostar à esquerda da última"),
-        Item(id: "DockRight", symbol: "arrow.right.to.line", tip: "Encostar à direita da última"),
-        Item(id: "DockUp", symbol: "arrow.up.to.line", tip: "Encostar acima da última"),
-        Item(id: "DockDown", symbol: "arrow.down.to.line", tip: "Encostar abaixo da última"),
-        Item(id: "StackH", symbol: "rectangle.split.3x1", tip: "Empilhar lado a lado, sem espaço"),
-        Item(id: "StackV", symbol: "rectangle.split.1x2", tip: "Empilhar uma embaixo da outra, sem espaço"),
-        Item(id: "DistH", symbol: "distribute.horizontal.center", tip: "Distribuir na horizontal (espaçamento na seta)", menu: [
-            M("GapHPlus", "Abrir espaço na horizontal (+1 mm)"), M("GapHMinus", "Fechar espaço na horizontal (−1 mm)"),
+    Section(title: "Posição", en: "Position", items: [
+        Item(id: "AlignLeft", symbol: "align.horizontal.left", tip: "Alinhar à esquerda da última", tipEN: "Align to the left of the last"),
+        Item(id: "AlignCenter", symbol: "align.horizontal.center", tip: "Centralizar com a última (horizontal)", tipEN: "Center with the last (horizontal)"),
+        Item(id: "AlignRight", symbol: "align.horizontal.right", tip: "Alinhar à direita da última", tipEN: "Align to the right of the last"),
+        Item(id: "AlignTop", symbol: "align.vertical.top", tip: "Alinhar ao topo da última", tipEN: "Align to the top of the last"),
+        Item(id: "AlignMiddle", symbol: "align.vertical.center", tip: "Centralizar com a última (vertical)", tipEN: "Center with the last (vertical)"),
+        Item(id: "AlignBottom", symbol: "align.vertical.bottom", tip: "Alinhar à base da última", tipEN: "Align to the bottom of the last"),
+        Item(id: "DockLeft", symbol: "arrow.left.to.line", tip: "Encostar à esquerda da última", tipEN: "Dock to the left of the last"),
+        Item(id: "DockRight", symbol: "arrow.right.to.line", tip: "Encostar à direita da última", tipEN: "Dock to the right of the last"),
+        Item(id: "DockUp", symbol: "arrow.up.to.line", tip: "Encostar acima da última", tipEN: "Dock above the last"),
+        Item(id: "DockDown", symbol: "arrow.down.to.line", tip: "Encostar abaixo da última", tipEN: "Dock below the last"),
+        Item(id: "StackH", symbol: "rectangle.split.3x1", tip: "Empilhar lado a lado, sem espaço", tipEN: "Stack side by side, no gap"),
+        Item(id: "StackV", symbol: "rectangle.split.1x2", tip: "Empilhar uma embaixo da outra, sem espaço", tipEN: "Stack one below the other, no gap"),
+        Item(id: "DistH", symbol: "distribute.horizontal.center", tip: "Distribuir na horizontal (espaçamento na seta)", tipEN: "Distribute horizontally (spacing in the arrow)", menu: [
+            M("GapHPlus", "Abrir espaço na horizontal (+1 mm)", "Widen horizontal gap (+1 mm)"), M("GapHMinus", "Fechar espaço na horizontal (−1 mm)", "Tighten horizontal gap (−1 mm)"),
         ]),
-        Item(id: "DistV", symbol: "distribute.vertical.center", tip: "Distribuir na vertical (espaçamento na seta)", menu: [
-            M("GapVPlus", "Abrir espaço na vertical (+1 mm)"), M("GapVMinus", "Fechar espaço na vertical (−1 mm)"),
+        Item(id: "DistV", symbol: "distribute.vertical.center", tip: "Distribuir na vertical (espaçamento na seta)", tipEN: "Distribute vertically (spacing in the arrow)", menu: [
+            M("GapVPlus", "Abrir espaço na vertical (+1 mm)", "Widen vertical gap (+1 mm)"), M("GapVMinus", "Fechar espaço na vertical (−1 mm)", "Tighten vertical gap (−1 mm)"),
         ]),
-        Item(id: "Swap", symbol: "arrow.left.arrow.right", tip: "Trocar posição de 2 formas (variações na seta)", menu: [
-            M("SwapCentered", "Trocar pelos centros"), M("SwapH", "Trocar só na horizontal"), M("SwapV", "Trocar só na vertical"),
-            M("SwapHC", "Trocar na horizontal, pelos centros"), M("SwapVC", "Trocar na vertical, pelos centros"),
+        Item(id: "Swap", symbol: "arrow.left.arrow.right", tip: "Trocar posição de 2 formas (variações na seta)", tipEN: "Swap the position of 2 shapes (variants in the arrow)", menu: [
+            M("SwapCentered", "Trocar pelos centros", "Swap by centers"), M("SwapH", "Trocar só na horizontal", "Swap horizontally only"), M("SwapV", "Trocar só na vertical", "Swap vertically only"),
+            M("SwapHC", "Trocar na horizontal, pelos centros", "Swap horizontally, by centers"), M("SwapVC", "Trocar na vertical, pelos centros", "Swap vertically, by centers"),
         ]),
-        Item(id: "DupRight", symbol: "plus.rectangle.on.rectangle", tip: "Duplicar à direita (outras direções na seta)", menu: [
-            M("DupLeft", "Duplicar à esquerda"), M("DupUp", "Duplicar acima"), M("DupDown", "Duplicar abaixo"),
+        Item(id: "DupRight", symbol: "plus.rectangle.on.rectangle", tip: "Duplicar à direita (outras direções na seta)", tipEN: "Duplicate to the right (other directions in the arrow)", menu: [
+            M("DupLeft", "Duplicar à esquerda", "Duplicate to the left"), M("DupUp", "Duplicar acima", "Duplicate above"), M("DupDown", "Duplicar abaixo", "Duplicate below"),
         ]),
-        Item(id: "CornerTL", symbol: "square.grid.3x3.topleft.filled", tip: "Centralizar no canto superior esquerdo da última (outros cantos na seta)", menu: [
-            M("CornerTR", "Canto superior direito"), M("CornerBL", "Canto inferior esquerdo"), M("CornerBR", "Canto inferior direito"),
+        Item(id: "CornerTL", symbol: "square.grid.3x3.topleft.filled", tip: "Centralizar no canto superior esquerdo da última (outros cantos na seta)", tipEN: "Center on the top-left corner of the last (other corners in the arrow)", menu: [
+            M("CornerTR", "Canto superior direito", "Top-right corner"), M("CornerBL", "Canto inferior esquerdo", "Bottom-left corner"), M("CornerBR", "Canto inferior direito", "Bottom-right corner"),
         ]),
-        Item(id: "MemSave", symbol: "pin", tip: "Memorizar posição e tamanho da última"),
-        Item(id: "MemBoth", symbol: "pin.fill", tip: "Aplicar posição e tamanho memorizados (âncoras na seta)", menu: [
-            M("MemPos", "Só a posição"), M("MemSize", "Só o tamanho"), M("MemWidth", "Só a largura"), M("MemHeight", "Só a altura"),
-            M("MemTL", "Âncora: superior esquerda"), M("MemTC", "Âncora: superior centro"), M("MemTR", "Âncora: superior direita"),
-            M("MemML", "Âncora: meio esquerda"), M("MemMC", "Âncora: centro"), M("MemMR", "Âncora: meio direita"),
-            M("MemBL", "Âncora: inferior esquerda"), M("MemBC", "Âncora: inferior centro"), M("MemBR", "Âncora: inferior direita"),
+        Item(id: "MemSave", symbol: "pin", tip: "Memorizar posição e tamanho da última", tipEN: "Memorize position and size of the last"),
+        Item(id: "MemBoth", symbol: "pin.fill", tip: "Aplicar posição e tamanho memorizados (âncoras na seta)", tipEN: "Apply memorized position and size (anchors in the arrow)", menu: [
+            M("MemPos", "Só a posição", "Position only"), M("MemSize", "Só o tamanho", "Size only"), M("MemWidth", "Só a largura", "Width only"), M("MemHeight", "Só a altura", "Height only"),
+            M("MemTL", "Âncora: superior esquerda", "Anchor: top left"), M("MemTC", "Âncora: superior centro", "Anchor: top center"), M("MemTR", "Âncora: superior direita", "Anchor: top right"),
+            M("MemML", "Âncora: meio esquerda", "Anchor: middle left"), M("MemMC", "Âncora: centro", "Anchor: center"), M("MemMR", "Âncora: meio direita", "Anchor: middle right"),
+            M("MemBL", "Âncora: inferior esquerda", "Anchor: bottom left"), M("MemBC", "Âncora: inferior centro", "Anchor: bottom center"), M("MemBR", "Âncora: inferior direita", "Anchor: bottom right"),
         ]),
-        Item(id: "AlignInTable", symbol: "tablecells", tip: "Encaixar nas células da tabela (selecione a tabela junto)"),
-        Item(id: "Matrix", symbol: "square.grid.3x2", tip: "Organizar em grade (colunas prontas na seta)", menu: [
-            M("Matrix2", "2 colunas"), M("Matrix3", "3 colunas"), M("Matrix4", "4 colunas"), M("Matrix5", "5 colunas"), M("Matrix6", "6 colunas"),
+        Item(id: "AlignInTable", symbol: "tablecells", tip: "Encaixar nas células da tabela (selecione a tabela junto)", tipEN: "Fit into the table cells (select the table too)"),
+        Item(id: "Matrix", symbol: "square.grid.3x2", tip: "Organizar em grade (colunas prontas na seta)", tipEN: "Arrange in a grid (preset columns in the arrow)", menu: [
+            M("Matrix2", "2 colunas", "2 columns"), M("Matrix3", "3 colunas", "3 columns"), M("Matrix4", "4 colunas", "4 columns"), M("Matrix5", "5 colunas", "5 columns"), M("Matrix6", "6 colunas", "6 columns"),
         ]),
-        Item(id: "Circle", symbol: "circle.dashed", tip: "Organizar em círculo (3+ formas)"),
-        Item(id: "Golden", symbol: "rectangle.ratio.16.to.9", tip: "Proporção áurea (altura = largura ÷ 1,618)"),
+        Item(id: "Circle", symbol: "circle.dashed", tip: "Organizar em círculo (3+ formas)", tipEN: "Arrange in a circle (3+ shapes)"),
+        Item(id: "Golden", symbol: "rectangle.ratio.16.to.9", tip: "Proporção áurea (altura = largura ÷ 1,618)", tipEN: "Golden ratio (height = width ÷ 1.618)"),
     ]),
-    Section(title: "Tamanho", items: [
-        Item(id: "SameWidth", symbol: "arrow.left.and.right.square", tip: "Mesma largura da última"),
-        Item(id: "SameHeight", symbol: "arrow.up.and.down.square", tip: "Mesma altura da última"),
-        Item(id: "SameSize", symbol: "square.on.square", tip: "Mesmo tamanho da última"),
-        Item(id: "WidthPlus", symbol: "plus.rectangle", tip: "Largura +1 mm (mais na seta)", menu: [
-            M("WidthMinus", "Largura −1 mm"), M("HeightPlus", "Altura +1 mm"), M("HeightMinus", "Altura −1 mm"),
+    Section(title: "Tamanho", en: "Size", items: [
+        Item(id: "SameWidth", symbol: "arrow.left.and.right.square", tip: "Mesma largura da última", tipEN: "Same width as the last"),
+        Item(id: "SameHeight", symbol: "arrow.up.and.down.square", tip: "Mesma altura da última", tipEN: "Same height as the last"),
+        Item(id: "SameSize", symbol: "square.on.square", tip: "Mesmo tamanho da última", tipEN: "Same size as the last"),
+        Item(id: "WidthPlus", symbol: "plus.rectangle", tip: "Largura +1 mm (mais na seta)", tipEN: "Width +1 mm (more in the arrow)", menu: [
+            M("WidthMinus", "Largura −1 mm", "Width −1 mm"), M("HeightPlus", "Altura +1 mm", "Height +1 mm"), M("HeightMinus", "Altura −1 mm", "Height −1 mm"),
         ]),
-        Item(id: "StretchLeft", symbol: "arrow.left.to.line.compact", tip: "Esticar até a esquerda da última"),
-        Item(id: "StretchRight", symbol: "arrow.right.to.line.compact", tip: "Esticar até a direita da última"),
-        Item(id: "StretchUp", symbol: "arrow.up.to.line.compact", tip: "Esticar até o topo da última"),
-        Item(id: "StretchDown", symbol: "arrow.down.to.line.compact", tip: "Esticar até a base da última"),
-        Item(id: "FillLeft", symbol: "arrowshape.left", tip: "Preencher até a vizinha (ou a borda) à esquerda"),
-        Item(id: "FillRight", symbol: "arrowshape.right", tip: "Preencher até a vizinha (ou a borda) à direita"),
-        Item(id: "FillUp", symbol: "arrowshape.up", tip: "Preencher até a vizinha (ou a borda) acima"),
-        Item(id: "FillDown", symbol: "arrowshape.down", tip: "Preencher até a vizinha (ou a borda) abaixo"),
-        Item(id: "MagicResizer", symbol: "wand.and.stars", tip: "Redimensionar em % (tamanho, linha e fonte; valores prontos na seta)", menu: [
-            M("Resize50", "50%"), M("Resize75", "75%"), M("Resize90", "90%"),
-            M("Resize110", "110%"), M("Resize125", "125%"), M("Resize150", "150%"), M("Resize200", "200%"),
+        Item(id: "StretchLeft", symbol: "arrow.left.to.line.compact", tip: "Esticar até a esquerda da última", tipEN: "Stretch to the left edge of the last"),
+        Item(id: "StretchRight", symbol: "arrow.right.to.line.compact", tip: "Esticar até a direita da última", tipEN: "Stretch to the right edge of the last"),
+        Item(id: "StretchUp", symbol: "arrow.up.to.line.compact", tip: "Esticar até o topo da última", tipEN: "Stretch to the top of the last"),
+        Item(id: "StretchDown", symbol: "arrow.down.to.line.compact", tip: "Esticar até a base da última", tipEN: "Stretch to the bottom of the last"),
+        Item(id: "FillLeft", symbol: "arrowshape.left", tip: "Preencher até a vizinha (ou a borda) à esquerda", tipEN: "Fill to the neighbor (or the edge) on the left"),
+        Item(id: "FillRight", symbol: "arrowshape.right", tip: "Preencher até a vizinha (ou a borda) à direita", tipEN: "Fill to the neighbor (or the edge) on the right"),
+        Item(id: "FillUp", symbol: "arrowshape.up", tip: "Preencher até a vizinha (ou a borda) acima", tipEN: "Fill to the neighbor (or the edge) above"),
+        Item(id: "FillDown", symbol: "arrowshape.down", tip: "Preencher até a vizinha (ou a borda) abaixo", tipEN: "Fill to the neighbor (or the edge) below"),
+        Item(id: "MagicResizer", symbol: "wand.and.stars", tip: "Redimensionar em % (tamanho, linha e fonte; valores prontos na seta)", tipEN: "Resize by % (size, line and font; presets in the arrow)", menu: [
+            M("Resize50", "50%", "50%"), M("Resize75", "75%", "75%"), M("Resize90", "90%", "90%"),
+            M("Resize110", "110%", "110%"), M("Resize125", "125%", "125%"), M("Resize150", "150%", "150%"), M("Resize200", "200%", "200%"),
         ]),
     ]),
-    Section(title: "Forma", items: [
-        Item(id: "ProcessChain", symbol: "chevron.right.2", tip: "Cadeia de processo: encaixar chevrons/setas lado a lado"),
-        Item(id: "MatchAdjust", symbol: "skew", tip: "Igualar pontas de setas e cantos arredondados à última"),
+    Section(title: "Forma", en: "Shape", items: [
+        Item(id: "ProcessChain", symbol: "chevron.right.2", tip: "Cadeia de processo: encaixar chevrons/setas lado a lado", tipEN: "Process chain: fit chevrons/arrows side by side"),
+        Item(id: "MatchAdjust", symbol: "skew", tip: "Igualar pontas de setas e cantos arredondados à última", tipEN: "Match arrow tips and rounded corners to the last"),
     ]),
-    Section(title: "Cor", items: [
-        Item(id: "LastFill", symbol: "paintbrush.fill", tip: "Preenchimento: repetir a última cor (cores do tema na seta)", colors: "Fill"),
-        Item(id: "LastLine", symbol: "pencil.line", tip: "Linha: repetir a última cor (cores do tema na seta)", colors: "Line"),
-        Item(id: "LastFont", symbol: "textformat", tip: "Texto: repetir a última cor (cores do tema na seta)", colors: "Font"),
-        Item(id: "CopyFill", symbol: "eyedropper.full", tip: "Copiar o preenchimento da última"),
-        Item(id: "CopyLine", symbol: "eyedropper.halffull", tip: "Copiar a cor da linha da última"),
-        Item(id: "CopyFont", symbol: "eyedropper", tip: "Copiar a cor do texto da última"),
-        Item(id: "ToRGB", symbol: "number", tip: "Converter cores do tema em RGB (o inverso na seta)", menu: [
-            M("ToTheme", "Converter RGB em cores do tema"),
+    Section(title: "Cor", en: "Color", items: [
+        Item(id: "LastFill", symbol: "paintbrush.fill", tip: "Preenchimento: repetir a última cor (cores do tema na seta)", tipEN: "Fill: repeat the last color (theme colors in the arrow)", colors: "Fill"),
+        Item(id: "LastLine", symbol: "pencil.line", tip: "Linha: repetir a última cor (cores do tema na seta)", tipEN: "Line: repeat the last color (theme colors in the arrow)", colors: "Line"),
+        Item(id: "LastFont", symbol: "textformat", tip: "Texto: repetir a última cor (cores do tema na seta)", tipEN: "Text: repeat the last color (theme colors in the arrow)", colors: "Font"),
+        Item(id: "CopyFill", symbol: "eyedropper.full", tip: "Copiar o preenchimento da última", tipEN: "Copy the fill of the last"),
+        Item(id: "CopyLine", symbol: "eyedropper.halffull", tip: "Copiar a cor da linha da última", tipEN: "Copy the line color of the last"),
+        Item(id: "CopyFont", symbol: "eyedropper", tip: "Copiar a cor do texto da última", tipEN: "Copy the text color of the last"),
+        Item(id: "ToRGB", symbol: "number", tip: "Converter cores do tema em RGB (o inverso na seta)", tipEN: "Convert theme colors to RGB (the reverse in the arrow)", menu: [
+            M("ToTheme", "Converter RGB em cores do tema", "Convert RGB to theme colors"),
         ]),
     ], colorBar: true),
-    Section(title: "Texto", items: [
-        Item(id: "LangPT", symbol: "", tip: "Revisão em português (Brasil): seleção ou, sem seleção, a apresentação toda", title: "PT"),
-        Item(id: "LangEN", symbol: "", tip: "Revisão em inglês (EUA): seleção ou, sem seleção, a apresentação toda", title: "EN"),
-        Item(id: "Spelling", symbol: "textformat.abc", tip: "Verificar ortografia"),
-        Item(id: "MarginPlus", symbol: "increase.indent", tip: "Margens internas +1 mm (mais opções na seta)", menu: [
-            M("MarginMinus", "Margens −1 mm"), M("MarginZero", "Margens zero"),
-            M("MarginHPlus", "Esquerda e direita +1 mm"), M("MarginHMinus", "Esquerda e direita −1 mm"),
-            M("MarginVPlus", "Topo e base +1 mm"), M("MarginVMinus", "Topo e base −1 mm"),
-            M("MarginLPlus", "Esquerda +1 mm"), M("MarginLMinus", "Esquerda −1 mm"),
-            M("MarginRPlus", "Direita +1 mm"), M("MarginRMinus", "Direita −1 mm"),
-            M("MarginTPlus", "Topo +1 mm"), M("MarginTMinus", "Topo −1 mm"),
-            M("MarginBPlus", "Base +1 mm"), M("MarginBMinus", "Base −1 mm"),
+    Section(title: "Texto", en: "Text", items: [
+        Item(id: "LangPT", symbol: "", tip: "Revisão em português (Brasil): seleção ou, sem seleção, a apresentação toda", tipEN: "Proofing in Portuguese (Brazil): selection or, with no selection, the whole presentation", title: "PT"),
+        Item(id: "LangEN", symbol: "", tip: "Revisão em inglês (EUA): seleção ou, sem seleção, a apresentação toda", tipEN: "Proofing in English (US): selection or, with no selection, the whole presentation", title: "EN"),
+        Item(id: "Spelling", symbol: "textformat.abc", tip: "Verificar ortografia", tipEN: "Check spelling"),
+        Item(id: "MarginPlus", symbol: "increase.indent", tip: "Margens internas +1 mm (mais opções na seta)", tipEN: "Inner margins +1 mm (more options in the arrow)", menu: [
+            M("MarginMinus", "Margens −1 mm", "Margins −1 mm"), M("MarginZero", "Margens zero", "Zero margins"),
+            M("MarginHPlus", "Esquerda e direita +1 mm", "Left and right +1 mm"), M("MarginHMinus", "Esquerda e direita −1 mm", "Left and right −1 mm"),
+            M("MarginVPlus", "Topo e base +1 mm", "Top and bottom +1 mm"), M("MarginVMinus", "Topo e base −1 mm", "Top and bottom −1 mm"),
+            M("MarginLPlus", "Esquerda +1 mm", "Left +1 mm"), M("MarginLMinus", "Esquerda −1 mm", "Left −1 mm"),
+            M("MarginRPlus", "Direita +1 mm", "Right +1 mm"), M("MarginRMinus", "Direita −1 mm", "Right −1 mm"),
+            M("MarginTPlus", "Topo +1 mm", "Top +1 mm"), M("MarginTMinus", "Topo −1 mm", "Top −1 mm"),
+            M("MarginBPlus", "Base +1 mm", "Bottom +1 mm"), M("MarginBMinus", "Base −1 mm", "Bottom −1 mm"),
         ]),
-        Item(id: "FitToText", symbol: "arrow.up.and.down.text.horizontal", tip: "Ajustar a forma ao texto"),
-        Item(id: "WrapText", symbol: "text.append", tip: "Quebrar texto na forma (liga/desliga)"),
-        Item(id: "SplitText", symbol: "rectangle.split.1x2", tip: "Dividir a caixa: uma por parágrafo"),
-        Item(id: "MergeText", symbol: "rectangle.compress.vertical", tip: "Juntar as caixas de texto numa só"),
-        Item(id: "Footnote", symbol: "text.below.photo", tip: "Nota de rodapé no slide"),
-        Item(id: "ReplaceTexts", symbol: "character.textbox", tip: "Substituir ou apagar o texto das formas selecionadas"),
+        Item(id: "FitToText", symbol: "arrow.up.and.down.text.horizontal", tip: "Ajustar a forma ao texto", tipEN: "Fit the shape to the text"),
+        Item(id: "WrapText", symbol: "text.append", tip: "Quebrar texto na forma (liga/desliga)", tipEN: "Wrap text in the shape (on/off)"),
+        Item(id: "SplitText", symbol: "rectangle.split.1x2", tip: "Dividir a caixa: uma por parágrafo", tipEN: "Split the box: one per paragraph"),
+        Item(id: "MergeText", symbol: "rectangle.compress.vertical", tip: "Juntar as caixas de texto numa só", tipEN: "Merge the text boxes into one"),
+        Item(id: "Footnote", symbol: "text.below.photo", tip: "Nota de rodapé no slide", tipEN: "Footnote on the slide"),
+        Item(id: "ReplaceTexts", symbol: "character.textbox", tip: "Substituir ou apagar o texto das formas selecionadas", tipEN: "Replace or delete the text of the selected shapes"),
     ]),
-    Section(title: "Navegação e visibilidade", items: [
-        Item(id: "SlidePrev", symbol: "chevron.left", tip: "Slide anterior"),
-        Item(id: "GoToSlide", symbol: "arrow.right.to.line.alt", tip: "Ir para o slide…"),
-        Item(id: "SlideNext", symbol: "chevron.right", tip: "Próximo slide"),
-        Item(id: "HideShapes", symbol: "eye.slash", tip: "Ocultar as formas selecionadas"),
-        Item(id: "UnhideShapes", symbol: "eye", tip: "Reexibir as formas ocultas do slide"),
-        Item(id: "MasterShapes", symbol: "rectangle.on.rectangle.angled", tip: "Mostrar/esconder as formas do slide mestre"),
-        Item(id: "SelectSimilar", symbol: "square.stack.3d.down.right", tip: "Selecionar formas parecidas com a última"),
+    Section(title: "Navegação e visibilidade", en: "Navigation and visibility", items: [
+        Item(id: "SlidePrev", symbol: "chevron.left", tip: "Slide anterior", tipEN: "Previous slide"),
+        Item(id: "GoToSlide", symbol: "arrow.right.to.line.alt", tip: "Ir para o slide…", tipEN: "Go to slide…"),
+        Item(id: "SlideNext", symbol: "chevron.right", tip: "Próximo slide", tipEN: "Next slide"),
+        Item(id: "HideShapes", symbol: "eye.slash", tip: "Ocultar as formas selecionadas", tipEN: "Hide the selected shapes"),
+        Item(id: "UnhideShapes", symbol: "eye", tip: "Reexibir as formas ocultas do slide", tipEN: "Show the hidden shapes on the slide"),
+        Item(id: "MasterShapes", symbol: "rectangle.on.rectangle.angled", tip: "Mostrar/esconder as formas do slide mestre", tipEN: "Show/hide the slide master shapes"),
+        Item(id: "SelectSimilar", symbol: "square.stack.3d.down.right", tip: "Selecionar formas parecidas com a última", tipEN: "Select shapes similar to the last"),
     ]),
-    Section(title: "Revisão", items: [
-        Item(id: "CommentInsert", symbol: "note.text.badge.plus", tip: "Comentário com suas iniciais e a data", tint: .systemYellow),
-        Item(id: "CommentNext", symbol: "arrow.forward.square", tip: "Próximo comentário"),
-        Item(id: "CommentDeleteAll", symbol: "xmark.bin", tip: "Apagar todos os comentários"),
-        Item(id: "StickerDraft", symbol: "tag.fill", tip: "Sticker: rascunho", tint: .systemGray),
-        Item(id: "StickerWip", symbol: "tag.fill", tip: "Sticker: em andamento", tint: .systemYellow),
-        Item(id: "StickerReview", symbol: "tag.fill", tip: "Sticker: revisar", tint: .systemBlue),
-        Item(id: "StickerDone", symbol: "tag.fill", tip: "Sticker: pronto", tint: .systemGreen),
-        Item(id: "StickerNext", symbol: "arrow.forward.circle", tip: "Próximo sticker"),
-        Item(id: "StickerDeleteAll", symbol: "trash", tip: "Apagar todos os stickers"),
+    Section(title: "Revisão", en: "Review", items: [
+        Item(id: "CommentInsert", symbol: "note.text.badge.plus", tip: "Comentário com suas iniciais e a data", tipEN: "Comment with your initials and the date", tint: .systemYellow),
+        Item(id: "CommentNext", symbol: "arrow.forward.square", tip: "Próximo comentário", tipEN: "Next comment"),
+        Item(id: "CommentDeleteAll", symbol: "xmark.bin", tip: "Apagar todos os comentários", tipEN: "Delete all comments"),
+        Item(id: "StickerDraft", symbol: "tag.fill", tip: "Sticker: rascunho", tipEN: "Sticker: draft", tint: .systemGray),
+        Item(id: "StickerWip", symbol: "tag.fill", tip: "Sticker: em andamento", tipEN: "Sticker: in progress", tint: .systemYellow),
+        Item(id: "StickerReview", symbol: "tag.fill", tip: "Sticker: revisar", tipEN: "Sticker: review", tint: .systemBlue),
+        Item(id: "StickerDone", symbol: "tag.fill", tip: "Sticker: pronto", tipEN: "Sticker: done", tint: .systemGreen),
+        Item(id: "StickerNext", symbol: "arrow.forward.circle", tip: "Próximo sticker", tipEN: "Next sticker"),
+        Item(id: "StickerDeleteAll", symbol: "trash", tip: "Apagar todos os stickers", tipEN: "Delete all stickers"),
     ]),
 ]
 
@@ -163,17 +168,19 @@ let SECTIONS: [Section] = [
 // (as do VBA abrem fora da tela com dois monitores) e grava a resposta para a macro (Ask/Confirm em modRibbon).
 enum Question { case confirm(String), input(String, String) }
 let QUESTIONS: [String: Question] = [
-    "CleanAnimations": .confirm("Remover TODAS as animações da apresentação?"),
-    "CleanNotes": .confirm("Apagar TODAS as anotações do orador?"),
-    "CleanAltText": .confirm("Apagar o texto alternativo de todas as formas?"),
-    "CleanLayouts": .confirm("Apagar os layouts que nenhum slide usa?"),
-    "StickerDeleteAll": .confirm("Apagar todos os stickers da apresentação?"),
-    "CommentDeleteAll": .confirm("Apagar todos os comentários da apresentação?"),
-    "AgendaDelete": .confirm("Apagar os slides de agenda do Prumo?"),
-    "MagicResizer": .input("Escala em % (80 reduz, 120 aumenta). Vale para tamanho, linha e fonte.", "100"),
-    "Matrix": .input("Quantas colunas?", "3"),
-    "GoToSlide": .input("Ir para o slide:", ""),
-    "ReplaceTexts": .input("Novo texto para as formas selecionadas (vazio apaga o texto):", ""),
+    "CleanAnimations": .confirm(L("Remover TODAS as animações da apresentação?", "Remove ALL animations from the presentation?")),
+    "CleanNotes": .confirm(L("Apagar TODAS as anotações do orador?", "Delete ALL speaker notes?")),
+    "CleanAltText": .confirm(L("Apagar o texto alternativo de todas as formas?", "Delete the alt text of all shapes?")),
+    "CleanLayouts": .confirm(L("Apagar os layouts que nenhum slide usa?", "Delete the layouts no slide uses?")),
+    "StickerDeleteAll": .confirm(L("Apagar todos os stickers da apresentação?", "Delete all stickers in the presentation?")),
+    "CommentDeleteAll": .confirm(L("Apagar todos os comentários da apresentação?", "Delete all comments in the presentation?")),
+    "AgendaDelete": .confirm(L("Apagar os slides de agenda do Prumo?", "Delete the Prumo agenda slides?")),
+    "MagicResizer": .input(L("Escala em % (80 reduz, 120 aumenta). Vale para tamanho, linha e fonte.",
+                             "Scale in % (80 shrinks, 120 grows). Applies to size, line and font."), "100"),
+    "Matrix": .input(L("Quantas colunas?", "How many columns?"), "3"),
+    "GoToSlide": .input(L("Ir para o slide:", "Go to slide:"), ""),
+    "ReplaceTexts": .input(L("Novo texto para as formas selecionadas (vazio apaga o texto):",
+                             "New text for the selected shapes (empty deletes the text):"), ""),
 ]
 
 // Troca com o VBA na pasta temporária do PowerPoint (a mesma para os dois), em códigos UTF-16 ("80,114,...").
@@ -319,7 +326,7 @@ final class Prumo: NSObject {
         let r = NSAppleScript(source: source)?.executeAndReturnError(&err)
         if let e = err {
             status.textColor = .systemRed
-            status.stringValue = "Falhou: " + ((e[NSAppleScript.errorMessage] as? String) ?? "\(e)")
+            status.stringValue = L("Falhou: ", "Failed: ") + ((e[NSAppleScript.errorMessage] as? String) ?? "\(e)")
             return nil
         }
         return r
@@ -347,7 +354,7 @@ final class Prumo: NSObject {
         let alert = NSAlert()
         alert.messageText = "Prumo"
         alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancelar")
+        alert.addButton(withTitle: L("Cancelar", "Cancel"))
         var field: NSTextField?
         switch q {
         case .confirm(let msg):
@@ -364,7 +371,7 @@ final class Prumo: NSObject {
             guard let self, resp == .alertFirstButtonReturn else { return }
             let answer = field?.stringValue ?? "sim"
             if id == "ReplaceTexts", answer.isEmpty {
-                self.confirmThen("Apagar o texto das formas selecionadas?", in: win) { self.send(id, arg: "") }
+                self.confirmThen(L("Apagar o texto das formas selecionadas?", "Delete the text of the selected shapes?"), in: win) { self.send(id, arg: "") }
                 return
             }
             if field != nil, answer.trimmingCharacters(in: .whitespaces).isEmpty { return }
@@ -376,8 +383,8 @@ final class Prumo: NSObject {
         let a = NSAlert()
         a.messageText = "Prumo"
         a.informativeText = msg
-        a.addButton(withTitle: "Apagar")
-        a.addButton(withTitle: "Cancelar")
+        a.addButton(withTitle: L("Apagar", "Delete"))
+        a.addButton(withTitle: L("Cancelar", "Cancel"))
         a.beginSheetModal(for: win) { if $0 == .alertFirstButtonReturn { action() } }
     }
 
@@ -393,7 +400,7 @@ final class Prumo: NSObject {
         do {
             try ev.sendEvent(options: [.noReply], timeout: TimeInterval(kAEDefaultTimeout))
         } catch {
-            status.stringValue = "Falhou: \(error.localizedDescription)"
+            status.stringValue = L("Falhou: ", "Failed: ") + error.localizedDescription
             return
         }
         var ticks = 0
@@ -473,13 +480,13 @@ final class Prumo: NSObject {
             let b = NSButton(image: swatch(c, 16), target: self, action: #selector(run(_:)))
             b.isBordered = false
             b.identifier = NSUserInterfaceItemIdentifier("FillT\(i + 1)")
-            b.toolTip = "Preencher com a cor \(i + 1) do tema"
+            b.toolTip = L("Preencher com a cor \(i + 1) do tema", "Fill with theme color \(i + 1)")
             bar.addArrangedSubview(b)
         }
-        let again = NSButton(image: NSImage(systemSymbolName: "arrow.clockwise", accessibilityDescription: "Atualizar cores") ?? NSImage(),
+        let again = NSButton(image: NSImage(systemSymbolName: "arrow.clockwise", accessibilityDescription: L("Atualizar cores", "Refresh colors")) ?? NSImage(),
                              target: self, action: #selector(refreshColorBar))
         again.isBordered = false
-        again.toolTip = "Atualizar as cores (depois de trocar de apresentação)"
+        again.toolTip = L("Atualizar as cores (depois de trocar de apresentação)", "Refresh the colors (after switching presentations)")
         bar.addArrangedSubview(again)
     }
 
@@ -494,27 +501,30 @@ final class Prumo: NSObject {
             menu.addItem(mi)
         }
         if let kind = it.colors {
-            let names = ["Escuro 1", "Claro 1", "Escuro 2", "Claro 2", "Ênfase 1", "Ênfase 2", "Ênfase 3", "Ênfase 4", "Ênfase 5", "Ênfase 6"]
+            let names = isEN
+                ? ["Dark 1", "Light 1", "Dark 2", "Light 2", "Accent 1", "Accent 2", "Accent 3", "Accent 4", "Accent 5", "Accent 6"]
+                : ["Escuro 1", "Claro 1", "Escuro 2", "Claro 2", "Ênfase 1", "Ênfase 2", "Ênfase 3", "Ênfase 4", "Ênfase 5", "Ênfase 6"]
             let colors = themeColors()
             for (i, name) in names.enumerated() { add("\(kind)T\(i + 1)", name, i < colors.count ? swatch(colors[i]) : nil) }
             if kind != "Font" {
                 menu.addItem(.separator())
-                add("\(kind)None", kind == "Fill" ? "Sem preenchimento" : "Sem linha")
+                add("\(kind)None", kind == "Fill" ? L("Sem preenchimento", "No fill") : L("Sem linha", "No line"))
             }
         } else {
-            it.menu.forEach { add($0.id, $0.label) }
+            it.menu.forEach { add($0.id, L($0.label, $0.en)) }
         }
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.height + 2), in: sender)
     }
 
     func button(_ it: Item) -> NSButton {
         let b = NSButton()
+        let tip = L(it.tip, it.tipEN)
         b.target = self
         b.action = #selector(run(_:))
         if let t = it.title {
             b.title = t
             b.font = .boldSystemFont(ofSize: 11)
-        } else if let img = NSImage(systemSymbolName: it.symbol, accessibilityDescription: it.tip)?
+        } else if let img = NSImage(systemSymbolName: it.symbol, accessibilityDescription: tip)?
             .withSymbolConfiguration(.init(pointSize: 15, weight: .regular)) {
             b.image = img
         } else {
@@ -522,10 +532,10 @@ final class Prumo: NSObject {
             b.font = .systemFont(ofSize: 9)
         }
         b.identifier = NSUserInterfaceItemIdentifier(it.id)
-        b.toolTip = it.tip
+        b.toolTip = tip
         b.isBordered = false
         b.contentTintColor = it.tint
-        b.setAccessibilityLabel(it.tip)
+        b.setAccessibilityLabel(tip)
         b.translatesAutoresizingMaskIntoConstraints = false
         b.widthAnchor.constraint(equalToConstant: 28).isActive = true
         b.heightAnchor.constraint(equalToConstant: 26).isActive = true
@@ -538,12 +548,12 @@ final class Prumo: NSObject {
         guard !it.menu.isEmpty || it.colors != nil else { return b }
         itemsById[it.id] = it
         let arrow = NSButton()
-        arrow.image = NSImage(systemSymbolName: "chevron.down", accessibilityDescription: "Mais opções")?
+        arrow.image = NSImage(systemSymbolName: "chevron.down", accessibilityDescription: L("Mais opções", "More options"))?
             .withSymbolConfiguration(.init(pointSize: 8, weight: .semibold))
         arrow.target = self
         arrow.action = #selector(showMenu(_:))
         arrow.identifier = NSUserInterfaceItemIdentifier(it.id)
-        arrow.toolTip = it.colors != nil ? "Cores do tema" : "Mais opções"
+        arrow.toolTip = it.colors != nil ? L("Cores do tema", "Theme colors") : L("Mais opções", "More options")
         arrow.isBordered = false
         arrow.translatesAutoresizingMaskIntoConstraints = false
         arrow.widthAnchor.constraint(equalToConstant: 12).isActive = true
@@ -571,10 +581,10 @@ final class Prumo: NSObject {
         // Cabeçalho: nome e botão de fechar (o botão Painel do ribbon traz de volta).
         let name = NSTextField(labelWithString: "Prumo")
         name.font = .boldSystemFont(ofSize: 15)
-        let close = NSButton(image: NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: "Fechar") ?? NSImage(),
+        let close = NSButton(image: NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: L("Fechar", "Close")) ?? NSImage(),
                              target: self, action: #selector(hide))
         close.isBordered = false
-        close.toolTip = "Fechar o painel (o botão Painel do ribbon traz de volta)"
+        close.toolTip = L("Fechar o painel (o botão Painel do ribbon traz de volta)", "Close the panel (the Panel button on the ribbon brings it back)")
         let spacer = NSView()
         spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
         let header = NSStackView(views: [name, spacer, close])
@@ -585,7 +595,7 @@ final class Prumo: NSObject {
             let sep = NSBox(); sep.boxType = .separator
             stack.addArrangedSubview(sep)
             sep.widthAnchor.constraint(equalToConstant: WIDTH - 20).isActive = true
-            let t = NSTextField(labelWithString: s.title)
+            let t = NSTextField(labelWithString: L(s.title, s.en))
             t.font = .boldSystemFont(ofSize: 11)
             stack.addArrangedSubview(t)
             // Linhas por largura: botão simples 28 pt, com menu 40 pt.

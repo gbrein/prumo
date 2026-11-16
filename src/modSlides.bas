@@ -42,12 +42,12 @@ Public Sub FindNextTagged(tag As String, nome As String)
             Exit Sub
         End If
     Next
-    Notify "Nenhum " & nome & " na apresentacao."
+    Notify Tx("Nenhum " & nome & " na apresentacao.", "No " & nome & " in the presentation.")
 End Sub
 
 Public Sub DeleteAllTagged(pres As Presentation, tag As String, nome As String)
-    If Not Confirm("Apagar todos os " & nome & "s da apresentacao?") Then Exit Sub
-    Notify DeleteTaggedAll(pres, tag) & " " & nome & "(s) apagado(s)."
+    If Not Confirm(Tx("Apagar todos os " & nome & "s da apresentacao?", "Delete all " & nome & "s in the presentation?")) Then Exit Sub
+    Notify DeleteTaggedAll(pres, tag) & " " & nome & Tx("(s) apagado(s).", "(s) deleted.")
 End Sub
 
 ' ---------- Comentarios: caixa amarela com iniciais e data (varios por slide) ----------
@@ -65,7 +65,7 @@ Public Function InsertComment(sld As Slide, ByVal author As String) As Shape
         .WordWrap = msoTrue
         .AutoSize = ppAutoSizeNone
         With .TextRange
-            .Text = author & " " & Format(Date, "dd/mm/yy") & ": "
+            .Text = author & " " & Format(Date, Tx("dd/mm/yy", "yyyy-mm-dd")) & ": "
             .Font.Size = 14: .Font.Bold = msoFalse: .Font.Color.RGB = RGB(0, 0, 0)
             .ParagraphFormat.Alignment = ppAlignLeft
         End With
@@ -112,7 +112,7 @@ Public Function InsertFootnote(sld As Slide) As Shape
         shp.Name = "Prumo Nota"
         shp.Tags.Add TAG_FOOTNOTE, "1"
         With shp.TextFrame.TextRange
-            .Text = "Fonte: "
+            .Text = Tx("Fonte: ", "Source: ")
             .Font.Size = 9
             .ParagraphFormat.Alignment = ppAlignLeft
         End With
@@ -123,7 +123,7 @@ End Function
 ' ---------- Navegacao e visibilidade ----------
 
 Public Sub GoToSlideN(ByVal n As Long)
-    If n < 1 Or n > ActivePresentation.Slides.Count Then Err.Raise vbObjectError + 13, , "a apresentacao tem " & ActivePresentation.Slides.Count & " slides."
+    If n < 1 Or n > ActivePresentation.Slides.Count Then Err.Raise vbObjectError + 13, , Tx("a apresentacao tem ", "the presentation has ") & ActivePresentation.Slides.Count & " slides."
     ActiveWindow.View.GotoSlide n
 End Sub
 
@@ -208,7 +208,7 @@ Public Sub SaveSelectedSlides(sr As SlideRange)
     For i = cp.Slides.Count To 1 Step -1
         If InStr(ids, "[" & cp.Slides(i).SlideID & "]") = 0 Then cp.Slides(i).Delete
     Next
-    Notify sr.Count & " slide(s) numa apresentacao nova. Salve com Arquivo > Salvar como."
+    Notify sr.Count & Tx(" slide(s) numa apresentacao nova. Salve com Arquivo > Salvar como.", " slide(s) in a new presentation. Save it with File > Save As.")
 End Sub
 
 ' ---------- Numeracao de paginas (caixa propria; a capa fica sem numero) ----------
@@ -247,7 +247,7 @@ Public Function AgendaUpdate(pres As Presentation) As Long
     For i = 2 To sp.Count
         If sp.SlidesCount(i) > 0 Then n = n + 1: names(n) = sp.Name(i): first(n) = sp.FirstSlide(i)
     Next
-    If n = 0 Then Err.Raise vbObjectError + 16, , "crie secoes nas miniaturas (clique direito > Adicionar secao): cada secao depois da 1a vira um item da agenda."
+    If n = 0 Then Err.Raise vbObjectError + 16, , Tx("crie secoes nas miniaturas (clique direito > Adicionar secao): cada secao depois da 1a vira um item da agenda.", "create sections in the thumbnails (right-click > Add Section): each section after the 1st becomes an agenda item.")
     For k = n To 1 Step -1  ' de tras para frente: os indices das secoes anteriores nao mudam
         Set sld = pres.Slides.Add(first(k), ppLayoutTitleOnly)
         sld.Tags.Add TAG_AGENDA, CStr(k)
@@ -293,7 +293,7 @@ Public Sub PasteOnSelectedSlides()
     On Error Resume Next
     Set sr = ActiveWindow.Selection.SlideRange
     On Error GoTo 0
-    If sr Is Nothing Then Err.Raise vbObjectError + 6, , "copie as formas e selecione os slides no painel de miniaturas."
+    If sr Is Nothing Then Err.Raise vbObjectError + 6, , Tx("copie as formas e selecione os slides no painel de miniaturas.", "copy the shapes and select the slides in the thumbnail pane.")
     For i = 1 To sr.Count
         sr(i).Shapes.Paste
     Next
@@ -303,7 +303,7 @@ End Sub
 
 Public Sub CleanAnimations(pres As Presentation)
     Dim sld As Slide, i As Long, n As Long
-    If Not Confirm("Remover TODAS as animacoes da apresentacao?") Then Exit Sub
+    If Not Confirm(Tx("Remover TODAS as animacoes da apresentacao?", "Remove ALL animations from the presentation?")) Then Exit Sub
     For Each sld In pres.Slides
         With sld.TimeLine.MainSequence
             For i = .Count To 1 Step -1
@@ -311,12 +311,12 @@ Public Sub CleanAnimations(pres As Presentation)
             Next
         End With
     Next
-    Notify n & " animacao(oes) removida(s)."
+    Notify n & Tx(" animacao(oes) removida(s).", " animation(s) removed.")
 End Sub
 
 Public Sub CleanNotes(pres As Presentation)
     Dim sld As Slide, shp As Shape
-    If Not Confirm("Apagar TODAS as anotacoes do orador?") Then Exit Sub
+    If Not Confirm(Tx("Apagar TODAS as anotacoes do orador?", "Delete ALL speaker notes?")) Then Exit Sub
     For Each sld In pres.Slides
         For Each shp In sld.NotesPage.Shapes.Placeholders
             If shp.PlaceholderFormat.Type = ppPlaceholderBody Then shp.TextFrame.TextRange.Text = ""
@@ -326,7 +326,7 @@ End Sub
 
 Public Sub CleanAltTexts(pres As Presentation)
     Dim sld As Slide, shp As Shape
-    If Not Confirm("Apagar o texto alternativo de todas as formas?") Then Exit Sub
+    If Not Confirm(Tx("Apagar o texto alternativo de todas as formas?", "Delete the alt text of all shapes?")) Then Exit Sub
     For Each sld In pres.Slides
         For Each shp In sld.Shapes
             shp.AlternativeText = ""
@@ -337,7 +337,7 @@ End Sub
 ' Apaga layouts que nenhum slide usa. Sem Scripting.Dictionary: nao existe no Mac.
 Public Sub CleanUnusedLayouts(pres As Presentation)
     Dim sld As Slide, d As Design, used As String, i As Long, n As Long
-    If Not Confirm("Apagar os layouts que nenhum slide usa?") Then Exit Sub
+    If Not Confirm(Tx("Apagar os layouts que nenhum slide usa?", "Delete the layouts no slide uses?")) Then Exit Sub
     For Each sld In pres.Slides
         used = used & "[" & sld.Design.Index & "|" & sld.CustomLayout.Index & "]"
     Next
@@ -351,7 +351,7 @@ Public Sub CleanUnusedLayouts(pres As Presentation)
             End If
         Next
     Next
-    Notify n & " layout(s) apagado(s)."
+    Notify n & Tx(" layout(s) apagado(s).", " layout(s) deleted.")
 End Sub
 
 ' ---------- Auxiliares ----------

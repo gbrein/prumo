@@ -18,7 +18,7 @@ $classes = @(
 $clsidRoots = 'HKCU:\Software\Classes\CLSID', 'HKCU:\Software\Classes\Wow6432Node\CLSID'  # Office 64 e 32 bits
 
 if (Get-Process POWERPNT -ErrorAction SilentlyContinue) {
-    throw 'Feche o PowerPoint antes (os arquivos do Prumo ficam presos enquanto ele esta aberto).'
+    throw 'Close PowerPoint first (the Prumo files are locked while it is open).'
 }
 
 $old = @($ppamKey, $addinKey)
@@ -28,7 +28,7 @@ foreach ($k in $old) {
 }
 if ($Uninstall) {
     if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
-    Write-Host 'Prumo removido.'
+    Write-Host 'Prumo removed.'
     return
 }
 
@@ -63,12 +63,12 @@ foreach ($c in $classes) {
 
 # O painel (add-in COM, carrega com o PowerPoint) e o suplemento (.ppam, carrega sozinho ao abrir).
 New-Item $addinKey -Force | Out-Null
-New-ItemProperty $addinKey -Name FriendlyName -Value 'Prumo Painel' | Out-Null
-New-ItemProperty $addinKey -Name Description -Value 'Painel lateral do Prumo' | Out-Null
+New-ItemProperty $addinKey -Name FriendlyName -Value 'Prumo Panel' | Out-Null
+New-ItemProperty $addinKey -Name Description -Value 'Prumo side panel' | Out-Null
 New-ItemProperty $addinKey -Name LoadBehavior -Value 3 -PropertyType DWord | Out-Null
 New-Item $ppamKey -Force | Out-Null
 New-ItemProperty $ppamKey -Name Path -Value (Join-Path $dest 'Prumo.ppam') | Out-Null
 New-ItemProperty $ppamKey -Name AutoLoad -Value 1 -PropertyType DWord | Out-Null
 
-Write-Host "Prumo instalado em $dest."
-Write-Host 'Abra o PowerPoint: a aba Prumo aparece no ribbon e o painel abre a direita. Se perguntar sobre macros, clique em Habilitar.'
+Write-Host "Prumo installed in $dest."
+Write-Host 'Open PowerPoint: the Prumo tab shows up on the ribbon and the panel opens on the right. If asked about macros, click Enable.'

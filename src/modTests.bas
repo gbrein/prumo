@@ -162,6 +162,7 @@ Public Function Prumo_SelfTestRun() As String
     HideShapes sld.Shapes.Range(Array("F", "G"))
     Check fails, "Hide/Unhide", f.Visible = msoFalse And UnhideShapes(sld) = 2 And g.Visible = msoTrue
     Check fails, "SelectSimilar", UBound(SimilarNames(g)) = 1
+    Check fails, "Textos do ribbon", UiText("PageNumbers.label") = Tx("Numerar p" & ChrW(225) & "ginas", "Number pages") And UiText("nada.label") = ""
 
     pres.Slides.Add 2, ppLayoutBlank
     InsertPageNumbers pres: InsertPageNumbers pres

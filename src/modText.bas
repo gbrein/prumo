@@ -110,7 +110,7 @@ End Sub
 
 ' Repete a ultima cor aplicada pelo Prumo (por tipo).
 Public Sub ApplyLastColor(r As ShapeRange, ByVal kind As Long)
-    If Not mHasLast(kind) Then Err.Raise vbObjectError + 9, , "nenhuma cor usada ainda: escolha uma no menu ao lado."
+    If Not mHasLast(kind) Then Err.Raise vbObjectError + 9, , Tx("nenhuma cor usada ainda: escolha uma no menu ao lado.", "no color used yet: pick one from the menu next to it.")
     ApplyColor r, kind, mLastTheme(kind), mLastRGB(kind)
 End Sub
 
@@ -182,9 +182,9 @@ End Sub
 Public Sub SplitTextBox(r As ShapeRange)
     Dim s As Shape, c As Shape, n As Long, k As Long, i As Long, h As Single, x As Single, y As Single, tr As TextRange
     Set s = r(1)
-    If Not s.HasTextFrame Then Err.Raise vbObjectError + 12, , "selecione uma caixa de texto."
+    If Not s.HasTextFrame Then Err.Raise vbObjectError + 12, , Tx("selecione uma caixa de texto.", "select a text box.")
     n = s.TextFrame.TextRange.Paragraphs.Count
-    If n < 2 Then Err.Raise vbObjectError + 12, , "a caixa tem um paragrafo so."
+    If n < 2 Then Err.Raise vbObjectError + 12, , Tx("a caixa tem um paragrafo so.", "the box has only one paragraph.")
     x = s.Left: y = s.Top: h = s.Height / n
     For k = n To 1 Step -1  ' copias antes; a original fica com o 1o paragrafo no fim
         If k > 1 Then Set c = s.Duplicate(1) Else Set c = s
@@ -203,7 +203,7 @@ End Sub
 ' Junta as caixas de texto (de cima para baixo) na mais alta, um paragrafo por caixa; apaga as demais.
 Public Sub MergeTextBoxes(r As ShapeRange)
     Dim idx() As Long, i As Long, dst As Shape, src As Shape
-    If r.Count < 2 Then Err.Raise vbObjectError + 2, , "selecione pelo menos 2 caixas de texto."
+    If r.Count < 2 Then Err.Raise vbObjectError + 2, , Tx("selecione pelo menos 2 caixas de texto.", "select at least 2 text boxes.")
     idx = SortedIdx(r, False)
     Set dst = r(idx(1))
     For i = 2 To r.Count

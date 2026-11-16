@@ -96,7 +96,7 @@ End Sub
 
 Public Sub Swap(r As ShapeRange, centered As Boolean)
     Dim a As Shape, b As Shape, ax As Single, ay As Single, bx As Single, by As Single
-    If r.Count <> 2 Then Err.Raise vbObjectError + 3, , "selecione exatamente 2 formas."
+    If r.Count <> 2 Then Err.Raise vbObjectError + 3, , Tx("selecione exatamente 2 formas.", "select exactly 2 shapes.")
     Set a = r(1): Set b = r(2)
     If centered Then
         ax = a.Left + a.Width / 2: ay = a.Top + a.Height / 2
@@ -113,7 +113,7 @@ End Sub
 ' Troca so a posicao horizontal (ou vertical) de 2 formas, pela borda ou pelo centro.
 Public Sub SwapAxis(r As ShapeRange, horizontal As Boolean, centered As Boolean)
     Dim a As Shape, b As Shape, pa As Single, pb As Single, ka As Single, kb As Single
-    If r.Count <> 2 Then Err.Raise vbObjectError + 3, , "selecione exatamente 2 formas."
+    If r.Count <> 2 Then Err.Raise vbObjectError + 3, , Tx("selecione exatamente 2 formas.", "select exactly 2 shapes.")
     Set a = r(1): Set b = r(2)
     If horizontal Then
         If centered Then ka = a.Width / 2: kb = b.Width / 2
@@ -152,7 +152,7 @@ End Sub
 
 Public Sub MemApply(r As ShapeRange, applyPos As Boolean, applySize As Boolean)
     Dim s As Shape
-    If Not memSet Then Err.Raise vbObjectError + 4, , "nada memorizado: use 'Memorizar' antes."
+    If Not memSet Then Err.Raise vbObjectError + 4, , Tx("nada memorizado: use 'Memorizar' antes.", "nothing memorized: use 'Memorize' first.")
     For Each s In r
         SetBox s, IIf(applyPos, memLeft, s.Left), IIf(applyPos, memTop, s.Top), _
                   IIf(applySize, memWidth, s.Width), IIf(applySize, memHeight, s.Height)
@@ -163,7 +163,7 @@ End Sub
 ' O ponto da ancora da forma vai para o mesmo ponto da forma memorizada.
 Public Sub MemAnchor(r As ShapeRange, anchor As String)
     Dim s As Shape, fx As Single, fy As Single
-    If Not memSet Then Err.Raise vbObjectError + 4, , "nada memorizado: use 'Memorizar' antes."
+    If Not memSet Then Err.Raise vbObjectError + 4, , Tx("nada memorizado: use 'Memorizar' antes.", "nothing memorized: use 'Memorize' first.")
     fy = (InStr("TMB", Left$(anchor, 1)) - 1) / 2
     fx = (InStr("LCR", Right$(anchor, 1)) - 1) / 2
     For Each s In r
@@ -175,7 +175,7 @@ End Sub
 ' So a largura (ou so a altura) memorizada.
 Public Sub MemDim(r As ShapeRange, width As Boolean)
     Dim s As Shape
-    If Not memSet Then Err.Raise vbObjectError + 4, , "nada memorizado: use 'Memorizar' antes."
+    If Not memSet Then Err.Raise vbObjectError + 4, , Tx("nada memorizado: use 'Memorizar' antes.", "nothing memorized: use 'Memorize' first.")
     For Each s In r
         SetBox s, s.Left, s.Top, IIf(width, memWidth, s.Width), IIf(width, s.Height, memHeight)
     Next
@@ -287,7 +287,7 @@ End Function
 ' Distribui as formas num circulo, na ordem da selecao, a partir do topo e no sentido horario.
 Public Sub ArrangeCircle(r As ShapeRange)
     Dim s As Shape, k As Long, x0 As Single, y0 As Single, x1 As Single, y1 As Single, big As Single, rad As Single, a As Double
-    If r.Count < 3 Then Err.Raise vbObjectError + 2, , "selecione pelo menos 3 formas."
+    If r.Count < 3 Then Err.Raise vbObjectError + 2, , Tx("selecione pelo menos 3 formas.", "select at least 3 shapes.")
     x0 = 1E+30: y0 = 1E+30: x1 = -1E+30: y1 = -1E+30
     For Each s In r
         If s.Left < x0 Then x0 = s.Left
@@ -332,7 +332,7 @@ End Function
 Public Sub MatchAdjust(r As ShapeRange)
     Dim ref As Shape, s As Shape, i As Long, k As Long, mr As Single, ms As Single
     Set ref = r(1)
-    If ref.Adjustments.Count = 0 Then Err.Raise vbObjectError + 11, , "a 1a forma nao tem pontas nem cantos ajustaveis."
+    If ref.Adjustments.Count = 0 Then Err.Raise vbObjectError + 11, , Tx("a 1a forma nao tem pontas nem cantos ajustaveis.", "the reference shape has no adjustable tips or corners.")
     mr = IIf(ref.Width < ref.Height, ref.Width, ref.Height)
     For i = 2 To r.Count
         Set s = r(i)
@@ -351,15 +351,15 @@ Public Function AskInt(msg As String, ByVal deflt As Long) As Long
     Dim v As String
     v = Ask(msg, CStr(deflt))
     If Trim$(v) = "" Then Exit Function
-    If Not IsNumeric(v) Then Err.Raise vbObjectError + 10, , "digite so o numero."
-    If CLng(v) < 1 Then Err.Raise vbObjectError + 10, , "use um numero a partir de 1."
+    If Not IsNumeric(v) Then Err.Raise vbObjectError + 10, , Tx("digite so o numero.", "type just the number.")
+    If CLng(v) < 1 Then Err.Raise vbObjectError + 10, , Tx("use um numero a partir de 1.", "use a number from 1 up.")
     AskInt = CLng(v)
 End Function
 
 ' Posiciona e dimensiona ignorando a trava de proporcao (restaurada no fim).
 Public Sub SetBox(s As Shape, ByVal l As Single, ByVal t As Single, ByVal w As Single, ByVal h As Single)
     Dim wasLocked As MsoTriState  ' "Lock" e palavra reservada do VBA
-    If w < 0 Or h < 0 Then Err.Raise vbObjectError + 5, , "a forma '" & s.Name & "' esta do outro lado da referencia."
+    If w < 0 Or h < 0 Then Err.Raise vbObjectError + 5, , Tx("a forma '" & s.Name & "' esta do outro lado da referencia.", "shape '" & s.Name & "' is on the other side of the reference.")
     wasLocked = s.LockAspectRatio
     s.LockAspectRatio = msoFalse
     s.Width = w: s.Height = h
@@ -374,7 +374,7 @@ Public Sub AlignInTable(r As ShapeRange)
     For Each s In r
         If s.HasTable Then Set tbl = s: Exit For
     Next
-    If tbl Is Nothing Then Err.Raise vbObjectError + 8, , "selecione a tabela junto com os objetos."
+    If tbl Is Nothing Then Err.Raise vbObjectError + 8, , Tx("selecione a tabela junto com os objetos.", "select the table together with the objects.")
     For Each s In r
         If s.Name <> tbl.Name Then
             If CellAt(tbl, s.Left + s.Width / 2, s.Top + s.Height / 2, cl, ct, cw, ch) Then
@@ -384,7 +384,7 @@ Public Sub AlignInTable(r As ShapeRange)
             End If
         End If
     Next
-    If n = 0 Then Err.Raise vbObjectError + 8, , "nenhum objeto esta sobre uma celula da tabela."
+    If n = 0 Then Err.Raise vbObjectError + 8, , Tx("nenhum objeto esta sobre uma celula da tabela.", "no object is over a table cell.")
 End Sub
 
 Private Function CellAt(tbl As Shape, ByVal x As Single, ByVal y As Single, cl As Single, ct As Single, cw As Single, ch As Single) As Boolean
@@ -431,10 +431,10 @@ End Sub
 ' Pergunta o fator do redimensionador; 0 = cancelado.
 Public Function AskPercent() As Single
     Dim v As String
-    v = Ask("Escala em % (80 reduz, 120 aumenta). Vale para tamanho, linha e fonte.", "100")
+    v = Ask(Tx("Escala em % (80 reduz, 120 aumenta). Vale para tamanho, linha e fonte.", "Scale in % (80 shrinks, 120 grows). Applies to size, line and font."), "100")
     If Trim$(v) = "" Then Exit Function
-    If Not IsNumeric(v) Then Err.Raise vbObjectError + 10, , "digite so o numero, por exemplo 80."
-    If CSng(v) <= 0 Or CSng(v) > 1000 Then Err.Raise vbObjectError + 10, , "use um valor entre 1 e 1000."
+    If Not IsNumeric(v) Then Err.Raise vbObjectError + 10, , Tx("digite so o numero, por exemplo 80.", "type just the number, for example 80.")
+    If CSng(v) <= 0 Or CSng(v) > 1000 Then Err.Raise vbObjectError + 10, , Tx("use um valor entre 1 e 1000.", "use a value between 1 and 1000.")
     AskPercent = CSng(v)
 End Function
 

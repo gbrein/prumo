@@ -45,12 +45,28 @@ namespace Prumo
         string lastKey;
         Timer timer;
 
+        // Idioma: o da interface do Office (msoLanguageIDUI). Português fica em português; qualquer outro, inglês.
+        internal static bool EN;
+        internal static string L(string pt, string en) { return EN ? en : pt; }
+
+        static bool DetectEN(object app)
+        {
+            try
+            {
+                object ls = app.GetType().InvokeMember("LanguageSettings", BindingFlags.GetProperty, null, app, null);
+                int id = (int)ls.GetType().InvokeMember("LanguageID", BindingFlags.GetProperty, null, ls, new object[] { 2 });
+                return (id & 0x3FF) != 0x16;  // 0x16 = português (Brasil e Portugal)
+            }
+            catch { return System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName != "pt"; }
+        }
+
         public void OnConnection(object application, int connectMode, object addInInst, ref Array custom)
         {
             Trace("OnConnection " + connectMode);
             try
             {
                 App = application;
+                EN = DetectEN(application);
                 object inst = addInInst;  // COMAddIn.Object: o VBA chama Show por ele
                 inst.GetType().InvokeMember("Object", BindingFlags.SetProperty, null, inst, new object[] { this });
                 // shortcut: sem eventos COM do PowerPoint, um timer acha janelas novas; trocar por WindowActivate se pesar
@@ -153,7 +169,7 @@ namespace Prumo
             catch (Exception ex)
             {
                 var inner = ex is TargetInvocationException && ex.InnerException != null ? ex.InnerException : ex;
-                return "Falhou: " + inner.Message;
+                return L("Falhou: ", "Failed: ") + inner.Message;
             }
         }
 
@@ -203,7 +219,15 @@ namespace Prumo
     [ClassInterface(ClassInterfaceType.AutoDispatch)]
     public class PanelControl : UserControl
     {
-        static readonly string[] ColorNames = { "Escuro 1", "Claro 1", "Escuro 2", "Claro 2", "Ênfase 1", "Ênfase 2", "Ênfase 3", "Ênfase 4", "Ênfase 5", "Ênfase 6" };
+        static string[] ColorNames
+        {
+            get
+            {
+                return Connect.EN
+                    ? new[] { "Dark 1", "Light 1", "Dark 2", "Light 2", "Accent 1", "Accent 2", "Accent 3", "Accent 4", "Accent 5", "Accent 6" }
+                    : new[] { "Escuro 1", "Claro 1", "Escuro 2", "Claro 2", "Ênfase 1", "Ênfase 2", "Ênfase 3", "Ênfase 4", "Ênfase 5", "Ênfase 6" };
+            }
+        }
         Connect owner;
         readonly ToolTip tips = new ToolTip();
         readonly Label status = new Label { AutoSize = true, ForeColor = Color.Firebrick };
@@ -266,9 +290,10 @@ namespace Prumo
                 while ((line = rd.ReadLine()) != null)
                 {
                     var f = line.Split('\t');
-                    if (f[0] == "S") list.Add(new Section { Title = f[1], ColorBar = f[2] == "1" });
-                    else if (f[0] == "I") list[list.Count - 1].Items.Add(new Item { Id = f[1], Tip = f[2], Title = f[3], Colors = f[4], Icon = f[5], Tint = f[6] });
-                    else if (f[0] == "M") { var s = list[list.Count - 1]; s.Items[s.Items.Count - 1].Menu.Add(new KeyValuePair<string, string>(f[1], f[2])); }
+                    // o texto em inglês vem na última coluna
+                    if (f[0] == "S") list.Add(new Section { Title = Connect.L(f[1], f[3]), ColorBar = f[2] == "1" });
+                    else if (f[0] == "I") list[list.Count - 1].Items.Add(new Item { Id = f[1], Tip = Connect.L(f[2], f[7]), Title = f[3], Colors = f[4], Icon = f[5], Tint = f[6] });
+                    else if (f[0] == "M") { var s = list[list.Count - 1]; s.Items[s.Items.Count - 1].Menu.Add(new KeyValuePair<string, string>(f[1], Connect.L(f[2], f[3]))); }
                 }
             }
             return list;
@@ -303,7 +328,7 @@ namespace Prumo
             // Botão + setinha de menu, como os botões divididos do Office (os dois juntos na mesma linha).
             var pair = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 0, 2, 2) };
             b.Margin = new Padding(0);
-            var arrow = NewButton("Mais opções: " + it.Tip, btn / 2);
+            var arrow = NewButton(Connect.L("Mais opções: ", "More options: ") + it.Tip, btn / 2);
             arrow.Text = "▾";
             arrow.Margin = new Padding(0);
             arrow.Click += (s, e) => ShowMenu(arrow, it);
@@ -328,7 +353,7 @@ namespace Prumo
                 {
                     m.Items.Add(new ToolStripSeparator());
                     string none = it.Colors + "None";
-                    m.Items.Add(it.Colors == "Fill" ? "Sem preenchimento" : "Sem linha").Click += (s, e) => Run(none);
+                    m.Items.Add(it.Colors == "Fill" ? Connect.L("Sem preenchimento", "No fill") : Connect.L("Sem linha", "No line")).Click += (s, e) => Run(none);
                 }
             }
             else
@@ -358,13 +383,13 @@ namespace Prumo
             for (int i = 0; i < colors.Count; i++)
             {
                 string id = "FillT" + (i + 1);
-                var b = NewButton("Preencher com a cor " + (i + 1) + " do tema", btn * 2 / 3);
+                var b = NewButton(Connect.L("Preencher com a cor " + (i + 1) + " do tema", "Fill with theme color " + (i + 1)), btn * 2 / 3);
                 b.Height = btn * 2 / 3;
                 b.Image = Swatch(colors[i], btn / 2);
                 b.Click += (s, e) => Run(id);
                 colorBar.Controls.Add(b);
             }
-            var again = NewButton("Atualizar as cores (depois de trocar de apresentação)", btn * 2 / 3);
+            var again = NewButton(Connect.L("Atualizar as cores (depois de trocar de apresentação)", "Refresh the colors (after switching presentations)"), btn * 2 / 3);
             again.Height = btn * 2 / 3;
             again.Text = "↻";
             again.Click += (s, e) => RefreshColors();

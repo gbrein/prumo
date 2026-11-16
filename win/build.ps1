@@ -26,7 +26,7 @@ $pptm = "$dist\Prumo.pptm"
 try {
     $app = New-Object -ComObject PowerPoint.Application
     $pres = $app.Presentations.Add(0)
-    foreach ($m in 'modLayout', 'modText', 'modSlides', 'modRibbon', 'modPanel', 'modTests') {
+    foreach ($m in 'modLayout', 'modText', 'modSlides', 'modRibbon', 'modPanel', 'modUi', 'modTests') {
         $null = $pres.VBProject.VBComponents.Import("$root\src\$m.bas")
     }
     if (Test-Path $pptm) { Remove-Item $pptm }

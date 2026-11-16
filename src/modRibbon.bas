@@ -51,6 +51,27 @@ Public Function FromPanel() As Boolean
     FromPanel = gFromPanel
 End Function
 
+' Idioma da interface: o do Office (msoLanguageIDUI). Portugues fica em portugues; qualquer outro, ingles.
+' Ligacao tardia: se o Mac nao responder, fica portugues.
+Public Function IsEN() As Boolean
+    Static done As Boolean, en As Boolean
+    Dim app As Object, id As Long
+    If Not done Then
+        Set app = Application
+        On Error Resume Next
+        id = app.LanguageSettings.LanguageID(2)
+        On Error GoTo 0
+        en = (id <> 0) And ((id And &H3FF) <> &H16)  ' &H16 = portugues (Brasil e Portugal)
+        done = True
+    End If
+    IsEN = en
+End Function
+
+' Texto no idioma da interface.
+Public Function Tx(ByVal pt As String, ByVal en As String) As String
+    If IsEN() Then Tx = en Else Tx = pt
+End Function
+
 ' Aviso: no painel vai para o rodape (prefixo "!" = erro); no ribbon, MsgBox.
 Public Sub Notify(msg As String, Optional isError As Boolean = False)
     If gFromPanel Then
@@ -141,7 +162,7 @@ Private Sub OpenPanel()
     dirPrumo = "/Users/" & Environ("USER") & "/Library/Application Support/Microsoft/Prumo/"
     If Len(Dir(dirPrumo & "disable")) > 0 Then Exit Sub
     If dlopen(dirPrumo & "libprumo.dylib", 2) = 0 Then
-        Err.Raise vbObjectError + 14, , "painel nao instalado: rode panel/build.sh."
+        Err.Raise vbObjectError + 14, , Tx("painel nao instalado: rode panel/build.sh.", "panel not installed: run panel/build.sh.")
     End If
     gPanelOn = True
     notify_post "com.gbrein.prumo.show"
@@ -150,7 +171,7 @@ Private Sub OpenPanel()
     On Error Resume Next
     Set a = Application.COMAddIns("Prumo.Panel")
     On Error GoTo 0
-    If a Is Nothing Then Err.Raise vbObjectError + 14, , "painel nao instalado: rode win\install.ps1."
+    If a Is Nothing Then Err.Raise vbObjectError + 14, , Tx("painel nao instalado: rode win\install.ps1.", "panel not installed: run win\install.ps1.")
     If Not a.Connect Then a.Connect = True
     a.Object.Show
 #End If
@@ -246,8 +267,8 @@ Public Sub Prumo_Run(id As String)
         Case "MarginBMinus": Margins Sel(1), -STEP_PT, "B"
         Case "FitToText": FitToText Sel(1)
         Case "WrapText": ToggleWrap Sel(1)
-        Case "LangPT": SetLanguage msoLanguageIDBrazilianPortuguese, "portugues (Brasil)"
-        Case "LangEN": SetLanguage msoLanguageIDEnglishUS, "ingles (EUA)"
+        Case "LangPT": SetLanguage msoLanguageIDBrazilianPortuguese, Tx("portugues (Brasil)", "Portuguese (Brazil)")
+        Case "LangEN": SetLanguage msoLanguageIDEnglishUS, Tx("ingles (EUA)", "English (US)")
         Case "Spelling": RunMso "Spelling"
         ' Cores do tema (1-10), nenhuma e repetir a ultima
         Case "FillT1", "FillT2", "FillT3", "FillT4", "FillT5", "FillT6", "FillT7", "FillT8", "FillT9", "FillT10": ApplyColor Sel(1), 0, CLng(Mid$(id, 6)), 0
@@ -270,7 +291,7 @@ Public Sub Prumo_Run(id As String)
         Case "SlidePrev": GoToSlideN CurSlide.SlideIndex - 1
         Case "SlideNext": GoToSlideN CurSlide.SlideIndex + 1
         Case "HideShapes": HideShapes Sel(1)
-        Case "UnhideShapes": Notify UnhideShapes(CurSlide) & " forma(s) reexibida(s)."
+        Case "UnhideShapes": Notify UnhideShapes(CurSlide) & Tx(" forma(s) reexibida(s).", " shape(s) shown again.")
         Case "MasterShapes": ToggleMasterShapes CurSlide
         ' Avancadas
         Case "SelectSimilar": CurSlide.Shapes.Range(SimilarNames(Sel(1)(1))).Select
@@ -281,27 +302,27 @@ Public Sub Prumo_Run(id As String)
         Case "CopyLine": CopyColors Sel(2), "line"
         Case "CopyFont": CopyColors Sel(2), "font"
         ' Revisao
-        Case "StickerDraft": InsertSticker CurSlide, "RASCUNHO", RGB(141, 141, 141), RGB(255, 255, 255)
-        Case "StickerWip": InsertSticker CurSlide, "EM ANDAMENTO", RGB(241, 194, 27), RGB(22, 22, 22)
-        Case "StickerReview": InsertSticker CurSlide, "REVISAR", RGB(15, 98, 254), RGB(255, 255, 255)
-        Case "StickerDone": InsertSticker CurSlide, "PRONTO", RGB(36, 161, 72), RGB(255, 255, 255)
+        Case "StickerDraft": InsertSticker CurSlide, Tx("RASCUNHO", "DRAFT"), RGB(141, 141, 141), RGB(255, 255, 255)
+        Case "StickerWip": InsertSticker CurSlide, Tx("EM ANDAMENTO", "IN PROGRESS"), RGB(241, 194, 27), RGB(22, 22, 22)
+        Case "StickerReview": InsertSticker CurSlide, Tx("REVISAR", "REVIEW"), RGB(15, 98, 254), RGB(255, 255, 255)
+        Case "StickerDone": InsertSticker CurSlide, Tx("PRONTO", "DONE"), RGB(36, 161, 72), RGB(255, 255, 255)
         Case "StickerNext": FindNextTagged TAG_STICKER, "sticker"
         Case "StickerDeleteAll": DeleteAllTagged ActivePresentation, TAG_STICKER, "sticker"
         ' Comentarios (caixa amarela com iniciais e data)
         Case "CommentInsert": InsertCommentHere
-        Case "CommentNext": FindNextTagged TAG_COMMENT, "comentario"
-        Case "CommentDeleteAll": DeleteAllTagged ActivePresentation, TAG_COMMENT, "comentario"
+        Case "CommentNext": FindNextTagged TAG_COMMENT, Tx("comentario", "comment")
+        Case "CommentDeleteAll": DeleteAllTagged ActivePresentation, TAG_COMMENT, Tx("comentario", "comment")
         ' Slides
         Case "PageNumbers": InsertPageNumbers ActivePresentation
         Case "PageNumbersDelete": DeletePageNumbers ActivePresentation
-        Case "AgendaUpdate": Notify "Agenda: " & AgendaUpdate(ActivePresentation) & " item(ns), um slide antes de cada secao."
-        Case "AgendaDelete": If Confirm("Apagar os slides de agenda do Prumo?") Then Notify AgendaDelete(ActivePresentation) & " slide(s) de agenda apagado(s)."
+        Case "AgendaUpdate": Notify "Agenda: " & AgendaUpdate(ActivePresentation) & Tx(" item(ns), um slide antes de cada secao.", " item(s), one slide before each section.")
+        Case "AgendaDelete": If Confirm(Tx("Apagar os slides de agenda do Prumo?", "Delete the Prumo agenda slides?")) Then Notify AgendaDelete(ActivePresentation) & Tx(" slide(s) de agenda apagado(s).", " agenda slide(s) deleted.")
         Case "PasteOnSlides": PasteOnSelectedSlides
         Case "CleanAnimations": CleanAnimations ActivePresentation
         Case "CleanNotes": CleanNotes ActivePresentation
         Case "CleanAltText": CleanAltTexts ActivePresentation
         Case "CleanLayouts": CleanUnusedLayouts ActivePresentation
-        Case Else: Err.Raise vbObjectError + 2, , "acao desconhecida: " & id
+        Case Else: Err.Raise vbObjectError + 2, , Tx("acao desconhecida: ", "unknown action: ") & id
     End Select
 End Sub
 
@@ -312,7 +333,7 @@ Private Sub SetLanguage(ByVal lang As Long, nome As String)
     Set r = SelOrNothing()
     If r Is Nothing Then
         n = ApplyLanguageAll(ActivePresentation, lang)
-        Notify "Idioma " & nome & " aplicado em " & n & " forma(s) da apresentacao."
+        Notify Tx("Idioma " & nome & " aplicado em " & n & " forma(s) da apresentacao.", nome & " applied to " & n & " shape(s) in the presentation.")
     Else
         ApplyLanguage r, lang
     End If
@@ -326,7 +347,7 @@ Private Sub RunMso(idMso As String)
     app.CommandBars.ExecuteMso idMso
     Exit Sub
 Falta:
-    Err.Raise vbObjectError + 15, , "este comando nao esta disponivel pelo VBA no Mac: use o menu Revisao > Ortografia."
+    Err.Raise vbObjectError + 15, , Tx("este comando nao esta disponivel pelo VBA no Mac: use o menu Revisao > Ortografia.", "this command is not available from VBA on the Mac: use Review > Spelling.")
 End Sub
 
 Private Sub ToggleBlackWhite()
@@ -336,28 +357,28 @@ Private Sub ToggleBlackWhite()
     w.BlackAndWhite = IIf(w.BlackAndWhite = msoTrue, msoFalse, msoTrue)
     Exit Sub
 Falta:
-    Err.Raise vbObjectError + 15, , "o modo preto e branco nao esta disponivel pelo VBA no Mac."
+    Err.Raise vbObjectError + 15, , Tx("o modo preto e branco nao esta disponivel pelo VBA no Mac.", "black and white mode is not available from VBA on the Mac.")
 End Sub
 
 Private Sub Matrix()
     Dim r As ShapeRange, n As Long
     Set r = Sel(2)
-    n = AskInt("Quantas colunas?", Int(Sqr(r.Count - 1)) + 1)
+    n = AskInt(Tx("Quantas colunas?", "How many columns?"), Int(Sqr(r.Count - 1)) + 1)
     If n > 0 Then AlignInMatrix r, n
 End Sub
 
 Private Sub GoToSlideAsk()
     Dim n As Long
-    n = AskInt("Ir para o slide:", CurSlide.SlideIndex)
+    n = AskInt(Tx("Ir para o slide:", "Go to slide:"), CurSlide.SlideIndex)
     If n > 0 Then GoToSlideN n
 End Sub
 
 Private Sub ReplaceTextsAsk()
     Dim r As ShapeRange, v As String
     Set r = Sel(1)
-    v = Ask("Novo texto para as " & r.Count & " forma(s) selecionada(s). Deixe vazio para apagar o texto.", "")
+    v = Ask(Tx("Novo texto para as " & r.Count & " forma(s) selecionada(s). Deixe vazio para apagar o texto.", "New text for the " & r.Count & " selected shape(s). Leave empty to delete the text."), "")
     If v = "" And Not FromPanel() Then  ' do painel, o apagar ja foi confirmado la
-        If Not Confirm("Apagar o texto das " & r.Count & " forma(s)?") Then Exit Sub
+        If Not Confirm(Tx("Apagar o texto das " & r.Count & " forma(s)?", "Delete the text of the " & r.Count & " shape(s)?")) Then Exit Sub
     End If
     ReplaceTexts r, v
 End Sub
@@ -373,7 +394,7 @@ Public Function SelSlides() As SlideRange
     On Error Resume Next
     Set SelSlides = ActiveWindow.Selection.SlideRange
     On Error GoTo 0
-    If SelSlides Is Nothing Then Err.Raise vbObjectError + 6, , "selecione os slides no painel de miniaturas."
+    If SelSlides Is Nothing Then Err.Raise vbObjectError + 6, , Tx("selecione os slides no painel de miniaturas.", "select the slides in the thumbnail pane.")
 End Function
 
 Private Sub MagicResizer()
@@ -395,7 +416,7 @@ Public Function Sel(minCount As Long) As ShapeRange
     On Error Resume Next
     n = ActiveWindow.Selection.ShapeRange.Count
     On Error GoTo 0
-    If n < minCount Then Err.Raise vbObjectError + 1, , "selecione pelo menos " & minCount & " forma(s)."
+    If n < minCount Then Err.Raise vbObjectError + 1, , Tx("selecione pelo menos " & minCount & " forma(s).", "select at least " & minCount & " shape(s).")
     Set Sel = LastFirst(ActiveWindow.Selection.ShapeRange)
 End Function
 
@@ -426,5 +447,5 @@ Public Function CurSlide() As Slide
     Set CurSlide = ActiveWindow.View.Slide
     If CurSlide Is Nothing Then Set CurSlide = ActiveWindow.Selection.SlideRange(1)
     On Error GoTo 0
-    If CurSlide Is Nothing Then Err.Raise vbObjectError + 7, , "nenhum slide em foco: clique num slide no modo Normal."
+    If CurSlide Is Nothing Then Err.Raise vbObjectError + 7, , Tx("nenhum slide em foco: clique num slide no modo Normal.", "no slide in focus: click a slide in Normal view.")
 End Function

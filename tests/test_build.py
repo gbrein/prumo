@@ -9,7 +9,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "build"))
-from build import CT_PPAM, CT_PPTM, PART, REL_TYPE, UI_SRC, inject  # noqa: E402
+from xml.dom import minidom  # noqa: E402
+from build import CT_PPAM, CT_PPTM, PART, REL_TYPE, UI_SRC, inject, localize, ui_texts  # noqa: E402
 
 
 def test_inject_idempotente():
@@ -28,7 +29,7 @@ def test_inject_idempotente():
             rels = z.read("_rels/.rels").decode()
             assert rels.count(REL_TYPE) == 1, rels
             assert 'Target="ppt/presentation.xml"' in rels
-            assert z.read(PART) == ui
+            assert z.read(PART) == localize(ui)
             assert z.read("ppt/vbaProject.bin") == b"\x00vba"
             assert 'Extension="xml"' in z.read("[Content_Types].xml").decode()
             assert z.namelist().count(PART) == 1
@@ -69,8 +70,20 @@ def test_todo_botao_tem_acao():
 
 
 def test_modpanel_em_dia():
-    from gen_panel import panel_module
+    from gen_panel import panel_module, ui_module
     assert (ROOT / "src" / "modPanel.bas").read_bytes().decode("ascii") == panel_module(), "rode build/gen_panel.py"
+    assert (ROOT / "src" / "modUi.bas").read_bytes().decode("ascii") == ui_module(), "rode build/gen_panel.py"
+
+
+def test_ribbon_todo_texto_tem_ingles():
+    # texto sem par em inglês ficaria fixo em português; e o Office recusa o ribbon se sobrar um labelEn
+    ui = localize(UI_SRC.read_bytes()).decode("utf-8")
+    minidom.parseString(ui)
+    for tag in re.findall(r"<\w+\s[^>]*>", ui):
+        if ' id="' in tag:
+            assert not re.search(r'\s(label|screentip|supertip)=', tag), f"texto sem par em inglês (labelEn/screentipEn/supertipEn): {tag}"
+    assert "En=" not in ui
+    assert len(ui_texts(UI_SRC.read_bytes())) > 100
 
 
 def test_painel_so_chama_acoes_que_existem():
@@ -87,9 +100,11 @@ def test_painel_windows_em_dia():
     from gen_panel import panel_tsv
     assert (ROOT / "win" / "panel.tsv").read_bytes().decode("utf-8") == panel_tsv(), "rode build/gen_panel.py"
     rows = [r.split("	") for r in panel_tsv().splitlines()]
-    assert all(len(r) == {"S": 3, "I": 7, "M": 3}[r[0]] for r in rows), "linha mal formada em panel.tsv"
+    assert all(len(r) == {"S": 4, "I": 8, "M": 4}[r[0]] for r in rows), "linha mal formada em panel.tsv"
     swift = (ROOT / "panel" / "PrumoPainel.swift").read_text(encoding="utf-8")
     assert len([r for r in rows if r[0] == "I"]) == len(re.findall(r'Item\(id: "', swift)), "item do Mac sem par no Windows"
+    assert len([r for r in rows if r[0] == "M"]) == len(re.findall(r'\bM\("', swift)), "opção de menu sem texto em inglês"
+    assert all(r[-1] for r in rows), "texto em inglês vazio em panel.tsv"
 
 
 def test_so_mac_fica_atras_de_if_mac():

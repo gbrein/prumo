@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Gera src/modPanel.bas (um Sub sem parâmetros por ação do Prumo_Run) e win/panel.tsv (os botões do painel do Windows).
+"""Gera src/modPanel.bas (um Sub sem parâmetros por ação do Prumo_Run), src/modUi.bas (textos PT/EN do ribbon)
+e win/panel.tsv (os botões do painel do Windows).
 
 O "run VB macro" do AppleScript no Mac não passa parâmetros (aceita e não executa),
 então o painel lateral chama PrumoP_<id>. Rodar sempre que mudar um Case em modRibbon.bas
@@ -66,25 +67,65 @@ def panel_module() -> str:
     return "\r\n".join(lines) + "\r\n"
 
 
+def vba_str(s: str) -> str:
+    """Literal VBA só com ASCII (o editor do Mac importa .bas em codificação legada): o resto vira ChrW."""
+    parts, run = [], ""
+    for ch in s:
+        if 32 <= ord(ch) < 127:
+            run += '""' if ch == '"' else ch
+        else:
+            if run:
+                parts.append(f'"{run}"')
+                run = ""
+            parts.append(f"ChrW({ord(ch)})")
+    if run or not parts:
+        parts.append(f'"{run}"')
+    return " & ".join(parts)
+
+
+def ui_module() -> str:
+    """Textos do ribbon (label/labelEn etc. em src/customUI14.xml) para os callbacks getLabel/getScreentip/getSupertip."""
+    from build import UI_SRC, ui_texts
+    lines = [
+        'Attribute VB_Name = "modUi"',
+        "Option Explicit",
+        "",
+        "' GERADO por build/gen_panel.py a partir de src/customUI14.xml: nao editar a mao.",
+        "' Textos do ribbon no idioma do Office (Tx, em modRibbon).",
+        "",
+        'Public Sub Prumo_GetLabel(control As IRibbonControl, ByRef text): text = UiText(control.ID & ".label"): End Sub',
+        'Public Sub Prumo_GetScreentip(control As IRibbonControl, ByRef text): text = UiText(control.ID & ".screentip"): End Sub',
+        'Public Sub Prumo_GetSupertip(control As IRibbonControl, ByRef text): text = UiText(control.ID & ".supertip"): End Sub',
+        "",
+        "Public Function UiText(key As String) As String  ' publica para o autoteste",
+        "    Select Case key",
+    ]
+    lines += [f'        Case "{i}.{a}": UiText = Tx({vba_str(pt)}, {vba_str(en)})' for i, a, pt, en in ui_texts(UI_SRC.read_bytes())]
+    lines += ["    End Select", "End Function"]
+    assert max(map(len, lines)) < 1000, "linha VBA longa demais"
+    return "\r\n".join(lines) + "\r\n"
+
+
 def panel_tsv() -> str:
-    """Seções e botões do painel do Mac, uma linha por registro: S(eção), I(tem), M(enu da setinha)."""
+    """Seções e botões do painel do Mac, uma linha por registro: S(eção), I(tem), M(enu da setinha); o inglês vai no fim."""
     out = []
     for line in SWIFT.read_text(encoding="utf-8").splitlines():
-        if m := re.search(r'Section\(title: "([^"]+)"', line):
-            out.append(["S", m.group(1), "0"])
+        if m := re.search(r'Section\(title: "([^"]+)", en: "([^"]+)"', line):
+            out.append(["S", m.group(1), "0", m.group(2)])
         elif "colorBar: true" in line:
             next(r for r in reversed(out) if r[0] == "S")[2] = "1"
         if m := re.search(r'\bItem\((.*)', line):
             f = dict(re.findall(r'(\w+): "([^"]*)"', m.group(1)))
             tint = re.search(r'tint: \.(\w+)', line)
             out.append(["I", f["id"], f["tip"], f.get("title", ""), f.get("colors", ""), WIN_ICON[f["id"]],
-                        TINTS[tint.group(1)] if tint else ""])
-        for mid, label in re.findall(r'\bM\("(\w+)", "([^"]*)"\)', line):
-            out.append(["M", mid, label])
+                        TINTS[tint.group(1)] if tint else "", f["tipEN"]])
+        for mid, label, en in re.findall(r'\bM\("(\w+)", "([^"]*)", "([^"]*)"\)', line):
+            out.append(["M", mid, label, en])
     return "".join("\t".join(r) + "\n" for r in out)
 
 
 if __name__ == "__main__":
     (SRC / "modPanel.bas").write_bytes(panel_module().encode("ascii"))
+    (SRC / "modUi.bas").write_bytes(ui_module().encode("ascii"))
     (ROOT / "win" / "panel.tsv").write_bytes(panel_tsv().encode("utf-8"))
-    print("src/modPanel.bas e win/panel.tsv gerados")
+    print("src/modPanel.bas, src/modUi.bas e win/panel.tsv gerados")

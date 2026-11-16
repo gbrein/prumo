@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Injeta src/customUI14.xml (o ribbon do Prumo) num .ppam, no próprio arquivo.
+Os textos em PT/EN (label/labelEn) viram callbacks resolvidos pelo VBA no idioma do Office.
 
 Uso: python3 build/build.py dist/Prumo.ppam
      python3 build/build.py dist/Prumo.pptm   (gera dist/Prumo.ppam ao lado)
@@ -13,6 +14,7 @@ from typing import Optional
 import zipfile
 from pathlib import Path
 from xml.dom import minidom
+from xml.sax.saxutils import unescape
 
 REL_TYPE = "http://schemas.microsoft.com/office/2007/relationships/ui/extensibility"
 PART = "customUI/customUI14.xml"
@@ -23,8 +25,29 @@ ICONS = UI_SRC.parent / "icons"  # ícones próprios: image="<nome>" no XML = ic
 IMG_REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
 
 
+TEXT_ATTR = re.compile(r'\s(label|screentip|supertip)="([^"]*)"\s+\1En="([^"]*)"')
+
+
+def ui_texts(ui: bytes) -> list:
+    """(id, atributo, pt, en) de cada texto bilíngue do ribbon: label="..." labelEn="..." num elemento com id."""
+    out = []
+    for tag in re.findall(r"<\w+\s[^>]*>", ui.decode("utf-8")):
+        if m := re.search(r'\sid="(\w+)"', tag):
+            out += [(m.group(1), a, unescape(pt), unescape(en)) for a, pt, en in TEXT_ATTR.findall(tag)]
+    return out
+
+
+def localize(ui: bytes) -> bytes:
+    """O Office não aceita labelEn: os textos bilíngues viram callbacks (Prumo_GetLabel etc., em modUi.bas)."""
+    def cb(m):
+        a = m.group(1)
+        return f' get{a.capitalize()}="Prumo_Get{a.capitalize()}"'
+    return TEXT_ATTR.sub(cb, ui.decode("utf-8")).encode("utf-8")
+
+
 def inject(target: Path, ui: bytes, out: Optional[Path] = None, icons: Path = ICONS) -> None:
     out = out or target
+    ui = localize(ui)
     minidom.parseString(ui)  # falha cedo se o XML do ribbon estiver quebrado
     with zipfile.ZipFile(target) as z:
         items = {n: z.read(n) for n in z.namelist() if not n.startswith("customUI/")}  # refaz a parte do ribbon

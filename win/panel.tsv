@@ -1,149 +1,149 @@
-S	Apresentação	0
-I	PageNumbers	Numerar páginas (a capa fica sem)			HeaderFooterInsert	
-I	PageNumbersDelete	Tirar números de página			txt:#̸	
-I	AgendaUpdate	Agenda pelas seções: um slide antes de cada uma (apagar na seta)			txt:☰	
-M	AgendaDelete	Apagar slides de agenda
-I	PasteOnSlides	Colar nos slides selecionados nas miniaturas			Paste	
-I	SaveSelected	Salvar só os slides selecionados (abre uma cópia)			FileSaveAs	
-I	SlidesAsPictures	Inserir os slides selecionados como imagens num slide novo			PictureInsertFromFile	
-I	CleanAnimations	Limpeza: remover animações (mais na seta)			txt:✨	
-M	CleanNotes	Remover anotações
-M	CleanAltText	Remover textos alternativos
-M	CleanLayouts	Remover layouts não usados
-I	BlackWhite	Modo preto e branco (liga/desliga)			txt:◐	
-S	Posição	0
-I	AlignLeft	Alinhar à esquerda da última			ObjectsAlignLeft	
-I	AlignCenter	Centralizar com a última (horizontal)			ObjectsAlignCenterHorizontal	
-I	AlignRight	Alinhar à direita da última			ObjectsAlignRight	
-I	AlignTop	Alinhar ao topo da última			ObjectsAlignTop	
-I	AlignMiddle	Centralizar com a última (vertical)			ObjectsAlignMiddleVertical	
-I	AlignBottom	Alinhar à base da última			ObjectsAlignBottom	
-I	DockLeft	Encostar à esquerda da última			txt:⇤	
-I	DockRight	Encostar à direita da última			txt:⇥	
-I	DockUp	Encostar acima da última			txt:↥	
-I	DockDown	Encostar abaixo da última			txt:↧	
-I	StackH	Empilhar lado a lado, sem espaço			txt:▥	
-I	StackV	Empilhar uma embaixo da outra, sem espaço			txt:▤	
-I	DistH	Distribuir na horizontal (espaçamento na seta)			AlignDistributeHorizontally	
-M	GapHPlus	Abrir espaço na horizontal (+1 mm)
-M	GapHMinus	Fechar espaço na horizontal (−1 mm)
-I	DistV	Distribuir na vertical (espaçamento na seta)			AlignDistributeVertically	
-M	GapVPlus	Abrir espaço na vertical (+1 mm)
-M	GapVMinus	Fechar espaço na vertical (−1 mm)
-I	Swap	Trocar posição de 2 formas (variações na seta)			txt:⇄	
-M	SwapCentered	Trocar pelos centros
-M	SwapH	Trocar só na horizontal
-M	SwapV	Trocar só na vertical
-M	SwapHC	Trocar na horizontal, pelos centros
-M	SwapVC	Trocar na vertical, pelos centros
-I	DupRight	Duplicar à direita (outras direções na seta)			Copy	
-M	DupLeft	Duplicar à esquerda
-M	DupUp	Duplicar acima
-M	DupDown	Duplicar abaixo
-I	CornerTL	Centralizar no canto superior esquerdo da última (outros cantos na seta)			txt:◰	
-M	CornerTR	Canto superior direito
-M	CornerBL	Canto inferior esquerdo
-M	CornerBR	Canto inferior direito
-I	MemSave	Memorizar posição e tamanho da última			txt:📌	
-I	MemBoth	Aplicar posição e tamanho memorizados (âncoras na seta)			txt:📍	
-M	MemPos	Só a posição
-M	MemSize	Só o tamanho
-M	MemWidth	Só a largura
-M	MemHeight	Só a altura
-M	MemTL	Âncora: superior esquerda
-M	MemTC	Âncora: superior centro
-M	MemTR	Âncora: superior direita
-M	MemML	Âncora: meio esquerda
-M	MemMC	Âncora: centro
-M	MemMR	Âncora: meio direita
-M	MemBL	Âncora: inferior esquerda
-M	MemBC	Âncora: inferior centro
-M	MemBR	Âncora: inferior direita
-I	AlignInTable	Encaixar nas células da tabela (selecione a tabela junto)			TableInsert	
-I	Matrix	Organizar em grade (colunas prontas na seta)			txt:▦	
-M	Matrix2	2 colunas
-M	Matrix3	3 colunas
-M	Matrix4	4 colunas
-M	Matrix5	5 colunas
-M	Matrix6	6 colunas
-I	Circle	Organizar em círculo (3+ formas)			txt:◌	
-I	Golden	Proporção áurea (altura = largura ÷ 1,618)			txt:φ	
-S	Tamanho	0
-I	SameWidth	Mesma largura da última			txt:↔	
-I	SameHeight	Mesma altura da última			txt:↕	
-I	SameSize	Mesmo tamanho da última			txt:⤢	
-I	WidthPlus	Largura +1 mm (mais na seta)			txt:±	
-M	WidthMinus	Largura −1 mm
-M	HeightPlus	Altura +1 mm
-M	HeightMinus	Altura −1 mm
-I	StretchLeft	Esticar até a esquerda da última			txt:⇠	
-I	StretchRight	Esticar até a direita da última			txt:⇢	
-I	StretchUp	Esticar até o topo da última			txt:⇡	
-I	StretchDown	Esticar até a base da última			txt:⇣	
-I	FillLeft	Preencher até a vizinha (ou a borda) à esquerda			txt:⇦	
-I	FillRight	Preencher até a vizinha (ou a borda) à direita			txt:⇨	
-I	FillUp	Preencher até a vizinha (ou a borda) acima			txt:⇧	
-I	FillDown	Preencher até a vizinha (ou a borda) abaixo			txt:⇩	
-I	MagicResizer	Redimensionar em % (tamanho, linha e fonte; valores prontos na seta)			txt:%	
-M	Resize50	50%
-M	Resize75	75%
-M	Resize90	90%
-M	Resize110	110%
-M	Resize125	125%
-M	Resize150	150%
-M	Resize200	200%
-S	Forma	0
-I	ProcessChain	Cadeia de processo: encaixar chevrons/setas lado a lado			txt:»	
-I	MatchAdjust	Igualar pontas de setas e cantos arredondados à última			txt:◇	
-S	Cor	1
-I	LastFill	Preenchimento: repetir a última cor (cores do tema na seta)		Fill	ShapeFillColorPicker	
-I	LastLine	Linha: repetir a última cor (cores do tema na seta)		Line	ShapeOutlineColorPicker	
-I	LastFont	Texto: repetir a última cor (cores do tema na seta)		Font	FontColorPicker	
-I	CopyFill	Copiar o preenchimento da última			txt:▧	
-I	CopyLine	Copiar a cor da linha da última			txt:▢	
-I	CopyFont	Copiar a cor do texto da última			txt:A	
-I	ToRGB	Converter cores do tema em RGB (o inverso na seta)			txt:#	
-M	ToTheme	Converter RGB em cores do tema
-S	Texto	0
-I	LangPT	Revisão em português (Brasil): seleção ou, sem seleção, a apresentação toda	PT			
-I	LangEN	Revisão em inglês (EUA): seleção ou, sem seleção, a apresentação toda	EN			
-I	Spelling	Verificar ortografia			Spelling	
-I	MarginPlus	Margens internas +1 mm (mais opções na seta)			IndentIncrease	
-M	MarginMinus	Margens −1 mm
-M	MarginZero	Margens zero
-M	MarginHPlus	Esquerda e direita +1 mm
-M	MarginHMinus	Esquerda e direita −1 mm
-M	MarginVPlus	Topo e base +1 mm
-M	MarginVMinus	Topo e base −1 mm
-M	MarginLPlus	Esquerda +1 mm
-M	MarginLMinus	Esquerda −1 mm
-M	MarginRPlus	Direita +1 mm
-M	MarginRMinus	Direita −1 mm
-M	MarginTPlus	Topo +1 mm
-M	MarginTMinus	Topo −1 mm
-M	MarginBPlus	Base +1 mm
-M	MarginBMinus	Base −1 mm
-I	FitToText	Ajustar a forma ao texto			txt:⇕	
-I	WrapText	Quebrar texto na forma (liga/desliga)			txt:↵	
-I	SplitText	Dividir a caixa: uma por parágrafo			txt:✂	
-I	MergeText	Juntar as caixas de texto numa só			txt:⊞	
-I	Footnote	Nota de rodapé no slide			txt:¹	
-I	ReplaceTexts	Substituir ou apagar o texto das formas selecionadas			ReplaceDialog	
-S	Navegação e visibilidade	0
-I	SlidePrev	Slide anterior			txt:‹	
-I	GoToSlide	Ir para o slide…			txt:↷	
-I	SlideNext	Próximo slide			txt:›	
-I	HideShapes	Ocultar as formas selecionadas			txt:⊘	
-I	UnhideShapes	Reexibir as formas ocultas do slide			txt:👁	
-I	MasterShapes	Mostrar/esconder as formas do slide mestre			txt:▣	
-I	SelectSimilar	Selecionar formas parecidas com a última			txt:≈	
-S	Revisão	0
-I	CommentInsert	Comentário com suas iniciais e a data			ReviewNewComment	#E0A800
-I	CommentNext	Próximo comentário			ReviewNextComment	
-I	CommentDeleteAll	Apagar todos os comentários			txt:✕	
-I	StickerDraft	Sticker: rascunho			txt:■	#8E8E93
-I	StickerWip	Sticker: em andamento			txt:■	#E0A800
-I	StickerReview	Sticker: revisar			txt:■	#0A64D8
-I	StickerDone	Sticker: pronto			txt:■	#2E9E44
-I	StickerNext	Próximo sticker			txt:➜	
-I	StickerDeleteAll	Apagar todos os stickers			txt:✕	
+S	Apresentação	0	Presentation
+I	PageNumbers	Numerar páginas (a capa fica sem)			HeaderFooterInsert		Number pages (the cover gets none)
+I	PageNumbersDelete	Tirar números de página			txt:#̸		Remove page numbers
+I	AgendaUpdate	Agenda pelas seções: um slide antes de cada uma (apagar na seta)			txt:☰		Agenda from sections: one slide before each (delete in the arrow)
+M	AgendaDelete	Apagar slides de agenda	Delete agenda slides
+I	PasteOnSlides	Colar nos slides selecionados nas miniaturas			Paste		Paste on the slides selected in the thumbnails
+I	SaveSelected	Salvar só os slides selecionados (abre uma cópia)			FileSaveAs		Save only the selected slides (opens a copy)
+I	SlidesAsPictures	Inserir os slides selecionados como imagens num slide novo			PictureInsertFromFile		Insert the selected slides as pictures on a new slide
+I	CleanAnimations	Limpeza: remover animações (mais na seta)			txt:✨		Cleanup: remove animations (more in the arrow)
+M	CleanNotes	Remover anotações	Remove notes
+M	CleanAltText	Remover textos alternativos	Remove alt texts
+M	CleanLayouts	Remover layouts não usados	Remove unused layouts
+I	BlackWhite	Modo preto e branco (liga/desliga)			txt:◐		Black and white mode (on/off)
+S	Posição	0	Position
+I	AlignLeft	Alinhar à esquerda da última			ObjectsAlignLeft		Align to the left of the last
+I	AlignCenter	Centralizar com a última (horizontal)			ObjectsAlignCenterHorizontal		Center with the last (horizontal)
+I	AlignRight	Alinhar à direita da última			ObjectsAlignRight		Align to the right of the last
+I	AlignTop	Alinhar ao topo da última			ObjectsAlignTop		Align to the top of the last
+I	AlignMiddle	Centralizar com a última (vertical)			ObjectsAlignMiddleVertical		Center with the last (vertical)
+I	AlignBottom	Alinhar à base da última			ObjectsAlignBottom		Align to the bottom of the last
+I	DockLeft	Encostar à esquerda da última			txt:⇤		Dock to the left of the last
+I	DockRight	Encostar à direita da última			txt:⇥		Dock to the right of the last
+I	DockUp	Encostar acima da última			txt:↥		Dock above the last
+I	DockDown	Encostar abaixo da última			txt:↧		Dock below the last
+I	StackH	Empilhar lado a lado, sem espaço			txt:▥		Stack side by side, no gap
+I	StackV	Empilhar uma embaixo da outra, sem espaço			txt:▤		Stack one below the other, no gap
+I	DistH	Distribuir na horizontal (espaçamento na seta)			AlignDistributeHorizontally		Distribute horizontally (spacing in the arrow)
+M	GapHPlus	Abrir espaço na horizontal (+1 mm)	Widen horizontal gap (+1 mm)
+M	GapHMinus	Fechar espaço na horizontal (−1 mm)	Tighten horizontal gap (−1 mm)
+I	DistV	Distribuir na vertical (espaçamento na seta)			AlignDistributeVertically		Distribute vertically (spacing in the arrow)
+M	GapVPlus	Abrir espaço na vertical (+1 mm)	Widen vertical gap (+1 mm)
+M	GapVMinus	Fechar espaço na vertical (−1 mm)	Tighten vertical gap (−1 mm)
+I	Swap	Trocar posição de 2 formas (variações na seta)			txt:⇄		Swap the position of 2 shapes (variants in the arrow)
+M	SwapCentered	Trocar pelos centros	Swap by centers
+M	SwapH	Trocar só na horizontal	Swap horizontally only
+M	SwapV	Trocar só na vertical	Swap vertically only
+M	SwapHC	Trocar na horizontal, pelos centros	Swap horizontally, by centers
+M	SwapVC	Trocar na vertical, pelos centros	Swap vertically, by centers
+I	DupRight	Duplicar à direita (outras direções na seta)			Copy		Duplicate to the right (other directions in the arrow)
+M	DupLeft	Duplicar à esquerda	Duplicate to the left
+M	DupUp	Duplicar acima	Duplicate above
+M	DupDown	Duplicar abaixo	Duplicate below
+I	CornerTL	Centralizar no canto superior esquerdo da última (outros cantos na seta)			txt:◰		Center on the top-left corner of the last (other corners in the arrow)
+M	CornerTR	Canto superior direito	Top-right corner
+M	CornerBL	Canto inferior esquerdo	Bottom-left corner
+M	CornerBR	Canto inferior direito	Bottom-right corner
+I	MemSave	Memorizar posição e tamanho da última			txt:📌		Memorize position and size of the last
+I	MemBoth	Aplicar posição e tamanho memorizados (âncoras na seta)			txt:📍		Apply memorized position and size (anchors in the arrow)
+M	MemPos	Só a posição	Position only
+M	MemSize	Só o tamanho	Size only
+M	MemWidth	Só a largura	Width only
+M	MemHeight	Só a altura	Height only
+M	MemTL	Âncora: superior esquerda	Anchor: top left
+M	MemTC	Âncora: superior centro	Anchor: top center
+M	MemTR	Âncora: superior direita	Anchor: top right
+M	MemML	Âncora: meio esquerda	Anchor: middle left
+M	MemMC	Âncora: centro	Anchor: center
+M	MemMR	Âncora: meio direita	Anchor: middle right
+M	MemBL	Âncora: inferior esquerda	Anchor: bottom left
+M	MemBC	Âncora: inferior centro	Anchor: bottom center
+M	MemBR	Âncora: inferior direita	Anchor: bottom right
+I	AlignInTable	Encaixar nas células da tabela (selecione a tabela junto)			TableInsert		Fit into the table cells (select the table too)
+I	Matrix	Organizar em grade (colunas prontas na seta)			txt:▦		Arrange in a grid (preset columns in the arrow)
+M	Matrix2	2 colunas	2 columns
+M	Matrix3	3 colunas	3 columns
+M	Matrix4	4 colunas	4 columns
+M	Matrix5	5 colunas	5 columns
+M	Matrix6	6 colunas	6 columns
+I	Circle	Organizar em círculo (3+ formas)			txt:◌		Arrange in a circle (3+ shapes)
+I	Golden	Proporção áurea (altura = largura ÷ 1,618)			txt:φ		Golden ratio (height = width ÷ 1.618)
+S	Tamanho	0	Size
+I	SameWidth	Mesma largura da última			txt:↔		Same width as the last
+I	SameHeight	Mesma altura da última			txt:↕		Same height as the last
+I	SameSize	Mesmo tamanho da última			txt:⤢		Same size as the last
+I	WidthPlus	Largura +1 mm (mais na seta)			txt:±		Width +1 mm (more in the arrow)
+M	WidthMinus	Largura −1 mm	Width −1 mm
+M	HeightPlus	Altura +1 mm	Height +1 mm
+M	HeightMinus	Altura −1 mm	Height −1 mm
+I	StretchLeft	Esticar até a esquerda da última			txt:⇠		Stretch to the left edge of the last
+I	StretchRight	Esticar até a direita da última			txt:⇢		Stretch to the right edge of the last
+I	StretchUp	Esticar até o topo da última			txt:⇡		Stretch to the top of the last
+I	StretchDown	Esticar até a base da última			txt:⇣		Stretch to the bottom of the last
+I	FillLeft	Preencher até a vizinha (ou a borda) à esquerda			txt:⇦		Fill to the neighbor (or the edge) on the left
+I	FillRight	Preencher até a vizinha (ou a borda) à direita			txt:⇨		Fill to the neighbor (or the edge) on the right
+I	FillUp	Preencher até a vizinha (ou a borda) acima			txt:⇧		Fill to the neighbor (or the edge) above
+I	FillDown	Preencher até a vizinha (ou a borda) abaixo			txt:⇩		Fill to the neighbor (or the edge) below
+I	MagicResizer	Redimensionar em % (tamanho, linha e fonte; valores prontos na seta)			txt:%		Resize by % (size, line and font; presets in the arrow)
+M	Resize50	50%	50%
+M	Resize75	75%	75%
+M	Resize90	90%	90%
+M	Resize110	110%	110%
+M	Resize125	125%	125%
+M	Resize150	150%	150%
+M	Resize200	200%	200%
+S	Forma	0	Shape
+I	ProcessChain	Cadeia de processo: encaixar chevrons/setas lado a lado			txt:»		Process chain: fit chevrons/arrows side by side
+I	MatchAdjust	Igualar pontas de setas e cantos arredondados à última			txt:◇		Match arrow tips and rounded corners to the last
+S	Cor	1	Color
+I	LastFill	Preenchimento: repetir a última cor (cores do tema na seta)		Fill	ShapeFillColorPicker		Fill: repeat the last color (theme colors in the arrow)
+I	LastLine	Linha: repetir a última cor (cores do tema na seta)		Line	ShapeOutlineColorPicker		Line: repeat the last color (theme colors in the arrow)
+I	LastFont	Texto: repetir a última cor (cores do tema na seta)		Font	FontColorPicker		Text: repeat the last color (theme colors in the arrow)
+I	CopyFill	Copiar o preenchimento da última			txt:▧		Copy the fill of the last
+I	CopyLine	Copiar a cor da linha da última			txt:▢		Copy the line color of the last
+I	CopyFont	Copiar a cor do texto da última			txt:A		Copy the text color of the last
+I	ToRGB	Converter cores do tema em RGB (o inverso na seta)			txt:#		Convert theme colors to RGB (the reverse in the arrow)
+M	ToTheme	Converter RGB em cores do tema	Convert RGB to theme colors
+S	Texto	0	Text
+I	LangPT	Revisão em português (Brasil): seleção ou, sem seleção, a apresentação toda	PT				Proofing in Portuguese (Brazil): selection or, with no selection, the whole presentation
+I	LangEN	Revisão em inglês (EUA): seleção ou, sem seleção, a apresentação toda	EN				Proofing in English (US): selection or, with no selection, the whole presentation
+I	Spelling	Verificar ortografia			Spelling		Check spelling
+I	MarginPlus	Margens internas +1 mm (mais opções na seta)			IndentIncrease		Inner margins +1 mm (more options in the arrow)
+M	MarginMinus	Margens −1 mm	Margins −1 mm
+M	MarginZero	Margens zero	Zero margins
+M	MarginHPlus	Esquerda e direita +1 mm	Left and right +1 mm
+M	MarginHMinus	Esquerda e direita −1 mm	Left and right −1 mm
+M	MarginVPlus	Topo e base +1 mm	Top and bottom +1 mm
+M	MarginVMinus	Topo e base −1 mm	Top and bottom −1 mm
+M	MarginLPlus	Esquerda +1 mm	Left +1 mm
+M	MarginLMinus	Esquerda −1 mm	Left −1 mm
+M	MarginRPlus	Direita +1 mm	Right +1 mm
+M	MarginRMinus	Direita −1 mm	Right −1 mm
+M	MarginTPlus	Topo +1 mm	Top +1 mm
+M	MarginTMinus	Topo −1 mm	Top −1 mm
+M	MarginBPlus	Base +1 mm	Bottom +1 mm
+M	MarginBMinus	Base −1 mm	Bottom −1 mm
+I	FitToText	Ajustar a forma ao texto			txt:⇕		Fit the shape to the text
+I	WrapText	Quebrar texto na forma (liga/desliga)			txt:↵		Wrap text in the shape (on/off)
+I	SplitText	Dividir a caixa: uma por parágrafo			txt:✂		Split the box: one per paragraph
+I	MergeText	Juntar as caixas de texto numa só			txt:⊞		Merge the text boxes into one
+I	Footnote	Nota de rodapé no slide			txt:¹		Footnote on the slide
+I	ReplaceTexts	Substituir ou apagar o texto das formas selecionadas			ReplaceDialog		Replace or delete the text of the selected shapes
+S	Navegação e visibilidade	0	Navigation and visibility
+I	SlidePrev	Slide anterior			txt:‹		Previous slide
+I	GoToSlide	Ir para o slide…			txt:↷		Go to slide…
+I	SlideNext	Próximo slide			txt:›		Next slide
+I	HideShapes	Ocultar as formas selecionadas			txt:⊘		Hide the selected shapes
+I	UnhideShapes	Reexibir as formas ocultas do slide			txt:👁		Show the hidden shapes on the slide
+I	MasterShapes	Mostrar/esconder as formas do slide mestre			txt:▣		Show/hide the slide master shapes
+I	SelectSimilar	Selecionar formas parecidas com a última			txt:≈		Select shapes similar to the last
+S	Revisão	0	Review
+I	CommentInsert	Comentário com suas iniciais e a data			ReviewNewComment	#E0A800	Comment with your initials and the date
+I	CommentNext	Próximo comentário			ReviewNextComment		Next comment
+I	CommentDeleteAll	Apagar todos os comentários			txt:✕		Delete all comments
+I	StickerDraft	Sticker: rascunho			txt:■	#8E8E93	Sticker: draft
+I	StickerWip	Sticker: em andamento			txt:■	#E0A800	Sticker: in progress
+I	StickerReview	Sticker: revisar			txt:■	#0A64D8	Sticker: review
+I	StickerDone	Sticker: pronto			txt:■	#2E9E44	Sticker: done
+I	StickerNext	Próximo sticker			txt:➜		Next sticker
+I	StickerDeleteAll	Apagar todos os stickers			txt:✕		Delete all stickers

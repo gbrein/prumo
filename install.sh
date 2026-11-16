@@ -15,9 +15,9 @@ for f in Prumo.ppam libprumo.dylib Prumo.applescript; do
   mv -f "$DEST/$f.new" "$DEST/$f"  # troca atômica: a cópia que o PowerPoint tem aberta continua íntegra
 done
 osacompile -o "$SCRIPTS/Prumo.scpt" "$DEST/Prumo.applescript"  # dá o nome do usuário para as iniciais dos comentários
-echo "Arquivos instalados em: $DEST"
+echo "Files installed in: $DEST"
 
-echo "Registrando o suplemento no PowerPoint (o macOS pode pedir para o Terminal controlar o PowerPoint: permita)..."
+echo "Registering the add-in in PowerPoint (macOS may ask to let Terminal control PowerPoint: allow it)..."
 if osascript - "$DEST/Prumo.ppam" <<'EOF'
 on run {ppam}
   tell application "Microsoft PowerPoint"
@@ -35,9 +35,9 @@ on run {ppam}
 end run
 EOF
 then
-  echo "Pronto. Se o PowerPoint perguntar, clique em Ativar Macros. A aba Prumo aparece no ribbon."
-  echo "Atualizou? Feche e abra o PowerPoint para carregar a versão nova do painel."
+  echo "Done. If PowerPoint asks, click Enable Macros. The Prumo tab shows up on the ribbon."
+  echo "Updating? Quit and reopen PowerPoint to load the new version of the panel."
 else
-  echo "Não consegui registrar sozinho. No PowerPoint: Ferramentas > Suplementos do PowerPoint > + e escolha"
-  echo "  $DEST/Prumo.ppam   (na janela de arquivo, Cmd+Shift+G e cole o caminho)"
+  echo "Could not register it automatically. In PowerPoint: Tools > PowerPoint Add-ins > + and choose"
+  echo "  $DEST/Prumo.ppam   (in the file dialog, press Cmd+Shift+G and paste the path)"
 fi
