@@ -1,6 +1,8 @@
-﻿# Instala, atualiza ou remove o Prumo no PowerPoint para Windows (sem admin: tudo em HKCU e %APPDATA%\Prumo).
-#   irm https://raw.githubusercontent.com/gbrein/prumo/main/win/install.ps1 | iex
-# Com os arquivos (Prumo.ppam, PrumoPanel.dll) já numa pasta, ou para desinstalar:
+# Arquivo sem BOM e mensagens sem acento: assim roda igual por irm (download) e por -File (lido como ANSI).
+# Instala, atualiza ou remove o Prumo no PowerPoint para Windows (sem admin: tudo em HKCU e %APPDATA%\Prumo).
+#   & ([scriptblock]::Create((irm https://raw.githubusercontent.com/gbrein/prumo/main/win/install.ps1)))
+#   (no fim, -Uninstall desinstala; -From <pasta> instala dos arquivos Prumo.ppam e PrumoPanel.dll já baixados)
+# Ou com o arquivo baixado:
 #   powershell -ExecutionPolicy Bypass -File install.ps1 -From <pasta>
 #   powershell -ExecutionPolicy Bypass -File install.ps1 -Uninstall
 param([string]$From, [switch]$Uninstall)
@@ -16,7 +18,7 @@ $classes = @(
 $clsidRoots = 'HKCU:\Software\Classes\CLSID', 'HKCU:\Software\Classes\Wow6432Node\CLSID'  # Office 64 e 32 bits
 
 if (Get-Process POWERPNT -ErrorAction SilentlyContinue) {
-    throw 'Feche o PowerPoint antes (os arquivos do Prumo ficam presos enquanto ele está aberto).'
+    throw 'Feche o PowerPoint antes (os arquivos do Prumo ficam presos enquanto ele esta aberto).'
 }
 
 $old = @($ppamKey, $addinKey)
@@ -69,4 +71,4 @@ New-ItemProperty $ppamKey -Name Path -Value (Join-Path $dest 'Prumo.ppam') | Out
 New-ItemProperty $ppamKey -Name AutoLoad -Value 1 -PropertyType DWord | Out-Null
 
 Write-Host "Prumo instalado em $dest."
-Write-Host 'Abra o PowerPoint: a aba Prumo aparece no ribbon e o painel abre à direita. Se perguntar sobre macros, clique em Habilitar.'
+Write-Host 'Abra o PowerPoint: a aba Prumo aparece no ribbon e o painel abre a direita. Se perguntar sobre macros, clique em Habilitar.'

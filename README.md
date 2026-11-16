@@ -58,19 +58,14 @@ Rode de novo o comando do jeito rápido e reinicie o PowerPoint.
 2. Abra o **PowerShell** (tecla Windows, digite "PowerShell", Enter), cole a linha abaixo e tecle Enter:
 
    ```powershell
-   irm https://raw.githubusercontent.com/gbrein/prumo/main/win/install.ps1 | iex
+   & ([scriptblock]::Create((irm https://raw.githubusercontent.com/gbrein/prumo/main/win/install.ps1)))
    ```
 
 3. Abra o PowerPoint. A aba **Prumo** aparece no ribbon e o painel abre à direita. Se o PowerPoint perguntar sobre macros, clique em **Habilitar**.
 
 O script ([win/install.ps1](win/install.ps1)) baixa `Prumo.ppam` e `PrumoPanel.dll` da página de [Releases](https://github.com/gbrein/prumo/releases) para `%APPDATA%\Prumo\` e registra os dois só para o seu usuário, sem pedir administrador. Para atualizar, rode de novo a mesma linha.
 
-Com os arquivos já baixados numa pasta, ou para desinstalar:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File install.ps1 -From C:\caminho\da\pasta
-powershell -ExecutionPolicy Bypass -File install.ps1 -Uninstall
-```
+Para desinstalar, feche o PowerPoint e rode a mesma linha com `-Uninstall` no fim. Com os arquivos já baixados numa pasta, use `-From C:\caminho\da\pasta` no lugar.
 
 ## Como usar
 
